@@ -75,3 +75,32 @@ button {
     outline: none;
     font-size: 14px;
 }
+
+.icon-button {
+    background: none;
+    border: 2px solid #0078c8;
+    cursor: pointer;
+    font-size: 16px;
+    color: #0078c8;
+}
+
+.icon-button:hover {
+    background-color: #0078c8;
+    color: white;
+}
+
+.inline-group-adaptive {
+    display: flex;
+    gap: 10px;
+}
+
+.inline-group-adaptive .input-container {
+    flex: 9;
+}
+
+.inline-group-adaptive .icon-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
