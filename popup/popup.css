@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    width: 500px;
+    width: 550px;
     max-width: 100%;
     padding: 10px;
 }
@@ -17,7 +17,7 @@ h2 {
 
 button {
     padding: 10px;
-    margin: 5px 0;
+    margin-bottom: 5px;
     border: none;
     border-radius: 5px;
     color: white;
@@ -26,25 +26,25 @@ button {
     width: 100%;
 }
 
-.feature-container {
+.inline-group {
     display: flex;
     gap: 10px;
 }
 
-.feature-container button {
+.inline-group > * {
     flex: 1;
     width: auto;
 }
 
-.feature-container button.enabled {
+.feature-button button.enabled {
     background-color: green;
 }
 
-.feature-container button.enabled:hover {
+.feature-button button.enabled:hover {
     background-color: darkgreen;
 }
 
-.feature-container button.disabled {
+.feature-button button.disabled {
     background-color: grey;
 }
 
@@ -56,13 +56,23 @@ button {
     background-color: rgba(0, 120, 200, 1);
 }
 
-input[type="text"],
-input[type="number"] {
-    width: 100%;
-    padding: 12px 15px;
-    margin: 8px 0;
-    box-sizing: border-box;
+.input-container {
+    display: flex;
+    align-items: center;
     border: 2px solid black;
     border-radius: 4px;
-    font-size: 13px;
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: white;
+}
+
+.input-container i {
+    margin-right: 10px;
+}
+
+.input-container input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
 }

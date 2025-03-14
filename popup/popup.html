@@ -1,25 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Discord link-opener settings</title>
     <link href="popup.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
+
 <body>
-<div class="container">
-    <h2>Discord link-opener settings</h2>
+    <div class="container">
+        <h2>Discord link-opener settings</h2>
 
-    <label for="channelUrl"></label><input id="channelUrl" placeholder="Channel URL" type="text">
-    <label for="regexFilter"></label><input id="regexFilter" placeholder="Regular Expression filter" type="text">
-    <label for="openingDelay"></label><input id="openingDelay" placeholder="Delay in ms" type="number">
+        <div class="inline-group">
+            <div class="input-container">
+                <i class="fa-solid fa-filter"></i>
+                <input id="regexFilter" placeholder="Regular Expression filter" type="text">
+            </div>
 
-    <div class="feature-container">
-        <button id="open-links">Open</button>
-        <button id="notify-links">Notify</button>
+            <div class="input-container">
+                <i class="fa-solid fa-clock"></i>
+                <input id="openingDelay" placeholder="Delay in ms" type="number">
+            </div>
+        </div>
+
+        <div class="input-container">
+            <i class="fa-solid fa-link"></i>
+            <input id="channelUrl" placeholder="Monitor channel URL" type="text">
+        </div>
+
+        <div class="input-container">
+            <i class="fa-solid fa-bell"></i>
+            <input id="webhookUrl" placeholder="Notify webhook URL" type="password">
+        </div>
+
+        <div class="inline-group feature-button">
+            <button id="open-links">Open</button>
+            <button id="notify-links">Notify</button>
+        </div>
+
+        <button id="monitor">Monitor</button>
     </div>
-
-    <button id="monitor">Monitor</button>
-</div>
 </body>
 <script type="module" src="popup.js"></script>
+
 </html>
