@@ -11,6 +11,7 @@ function initializeEventListeners() {
     addClickListener("monitor", handleMonitorClick);
     addClickListener("open-links", toggleSetting.bind(null, "openEnabled", "open-links"));
     addClickListener("notify-links", toggleSetting.bind(null, "notifyEnabled", "notify-links"));
+    addClickListener("send-test-webhook", sendTestWebhook);
 
     addBlurListener("channelUrl", saveSettings);
     addBlurListener("webhookUrl", saveSettings);
@@ -90,5 +91,20 @@ function handleMonitorClick() {
 
         window.close();
         chrome.tabs.sendMessage(currentTab.id, { type: "openDiscord", url: channelUrl });
+    });
+}
+
+function sendTestWebhook() {
+    const webhookUrl = getInputValue("webhookUrl");
+
+    chrome.runtime.sendMessage({
+        type: "sendWebhook",
+        webhookUrl: webhookUrl,
+        serverName: "Test Server",
+        link: "https://github.com/Mathious6/discord-link-opener"
+    }, (response) => {
+        if (chrome.runtime.lastError) console.error("Error sending webhook:", chrome.runtime.lastError.message);
+        if (response?.success) console.log("Webhook test sent successfully");
+        else console.error("Failed to send webhook:", response?.error);
     });
 }
