@@ -31,18 +31,43 @@ export function setInputValue(elementId, value, defaultValue = "") {
     document.getElementById(elementId).value = value !== undefined ? value : defaultValue;
 }
 
-/** Reset the background color of the input fields to the default color.
+/** Reset the background color of the input fields and its container to the default color.
  * @param {string[]} elementIds
  */
 export function resetInputStyles(elementIds) {
-    elementIds.forEach(id => document.getElementById(id).style.backgroundColor = "");
+    elementIds.forEach(id => {
+        const inputElement = document.getElementById(id);
+        inputElement.style.backgroundColor = "";
+        const parentContainer = inputElement.closest(".input-container");
+        if (parentContainer) {
+            parentContainer.style.backgroundColor = "";
+        }
+    });
 }
 
-/** Highlight the input field with the given id by changing its background color to red.
+/** Highlight the input field and its container by changing its background color to red.
  * @param {string} elementId
  */
 export function highlightInvalidField(elementId) {
-    document.getElementById(elementId).style.backgroundColor = "rgba(190,25,43,0.2)";
+    const inputElement = document.getElementById(elementId);
+    inputElement.style.backgroundColor = "rgba(190,25,43,0.2)";
+    const parentContainer = inputElement.closest(".input-container");
+    if (parentContainer) {
+        parentContainer.style.backgroundColor = "rgba(190,25,43,0.2)";
+    }
+}
+
+/** Check if the given value is a valid URL.
+ * @param {string} value
+ * @returns {boolean}
+ */
+export function isValidUrl(value) {
+    try {
+        new URL(value);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 /** Check if the given value is a valid regular expression.
