@@ -8,6 +8,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('openingDelay').addEventListener('blur', saveSettings);
 });
 
+function loadSettings() {
+    chrome.storage.local.get(['channelUrl', 'regexFilter', 'openingDelay'], function (result) {
+        if (result.channelUrl) {
+            document.getElementById('channelUrl').value = result.channelUrl;
+            document.getElementById('regexFilter').value = result.regexFilter || "";
+            document.getElementById('openingDelay').value = result.openingDelay || 0;
+        }
+    });
+}
+
 function saveSettings() {
     const channelUrl = document.getElementById('channelUrl').value;
     const regexFilter = document.getElementById('regexFilter').value;
@@ -40,16 +50,6 @@ function saveSettings() {
         openingDelay: openingDelay || 0
     }, function () {
         console.log('Settings saved');
-    });
-}
-
-function loadSettings() {
-    chrome.storage.local.get(['channelUrl', 'regexFilter', 'openingDelay'], function (result) {
-        if (result.channelUrl) {
-            document.getElementById('channelUrl').value = result.channelUrl;
-            document.getElementById('regexFilter').value = result.regexFilter || "";
-            document.getElementById('openingDelay').value = result.openingDelay || 0;
-        }
     });
 }
 

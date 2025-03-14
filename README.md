@@ -5,7 +5,7 @@ Thanks to regular expressions, you can automatically open links from your favori
 
 The extension will monitor the provided channel and open the first link that matches the regular expressions.
 
-![demo_gif](./images/demo.gif)
+![demo_gif](./docs/demo.gif)
 
 ## How to use 📖
 
