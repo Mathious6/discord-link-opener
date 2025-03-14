@@ -96,11 +96,15 @@ function handleMonitorClick() {
 
 function sendTestWebhook() {
     const webhookUrl = getInputValue("webhookUrl");
+    const regexFilter = getInputValue("regexFilter");
+    const openingDelay = getInputValue("openingDelay");
 
     chrome.runtime.sendMessage({
         type: "sendWebhook",
         webhookUrl: webhookUrl,
         serverName: "Test Server",
+        regexFilter: regexFilter,
+        openingDelay: openingDelay,
         link: "https://github.com/Mathious6/discord-link-opener"
     }, (response) => {
         if (chrome.runtime.lastError) console.error("Error sending webhook:", chrome.runtime.lastError.message);
