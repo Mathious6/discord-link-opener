@@ -16,7 +16,7 @@ function initializeEventListeners() {
     addBlurListener("channelUrl", saveSettings);
     addBlurListener("webhookUrl", saveSettings);
     addBlurListener("regexFilter", saveSettings);
-    addBlurListener("openingDelay", saveSettings);
+    addBlurListener("delay", saveSettings);
 }
 
 function toggleSetting(settingKey, buttonId) {
@@ -31,12 +31,12 @@ function toggleSetting(settingKey, buttonId) {
 
 function loadSettings() {
     chrome.storage.local.get([
-        "channelUrl", "webhookUrl", "regexFilter", "openingDelay", "openEnabled", "notifyEnabled"
+        "channelUrl", "webhookUrl", "regexFilter", "delay", "openEnabled", "notifyEnabled"
     ], (settings) => {
         setInputValue("channelUrl", settings.channelUrl);
         setInputValue("webhookUrl", settings.webhookUrl);
         setInputValue("regexFilter", settings.regexFilter, "");
-        setInputValue("openingDelay", settings.openingDelay, 0);
+        setInputValue("delay", settings.delay, 0);
 
         updateButtonState("open-links", settings.openEnabled ?? true);
         updateButtonState("notify-links", settings.notifyEnabled ?? true);
@@ -48,10 +48,10 @@ function saveSettings() {
         channelUrl: getInputValue("channelUrl"),
         webhookUrl: getInputValue("webhookUrl"),
         regexFilter: getInputValue("regexFilter"),
-        openingDelay: getInputValue("openingDelay")
+        delay: getInputValue("delay")
     };
 
-    resetInputStyles(["channelUrl", "webhookUrl", "regexFilter", "openingDelay"]);
+    resetInputStyles(["channelUrl", "webhookUrl", "regexFilter", "delay"]);
 
     if (!settings.channelUrl || !isValidUrl(settings.channelUrl)) {
         highlightInvalidField("channelUrl");
@@ -68,8 +68,8 @@ function saveSettings() {
         return;
     }
 
-    if (!isValidNumber(settings.openingDelay)) {
-        highlightInvalidField("openingDelay");
+    if (!isValidNumber(settings.delay)) {
+        highlightInvalidField("delay");
         return;
     }
 
@@ -96,17 +96,12 @@ function handleMonitorClick() {
 
 function sendTestWebhook() {
     const webhookUrl = getInputValue("webhookUrl");
+    const serverName = "Test Server";
     const regexFilter = getInputValue("regexFilter");
-    const openingDelay = getInputValue("openingDelay");
+    const delay = getInputValue("delay");
+    const link = "https://github.com/Mathious6/discord-link-opener"
 
-    chrome.runtime.sendMessage({
-        type: "sendWebhook",
-        webhookUrl: webhookUrl,
-        serverName: "Test Server",
-        regexFilter: regexFilter,
-        openingDelay: openingDelay,
-        link: "https://github.com/Mathious6/discord-link-opener"
-    }, (response) => {
+    chrome.runtime.sendMessage({ type: "sendWebhook", webhookUrl, serverName, regexFilter, delay, link }, (response) => {
         if (chrome.runtime.lastError) console.error("Error sending webhook:", chrome.runtime.lastError.message);
         if (response?.success) console.log("Webhook test sent successfully");
         else console.error("Failed to send webhook:", response?.error);

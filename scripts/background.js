@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         console.info(`Speaking: ${request.message}`);
         chrome.tts.speak(request.message);
     } else if (request.type === "sendWebhook") {
-        sendWebhook(request.webhookUrl, request.serverName, request.regexFilter, request.openingDelay, request.link)
+        sendWebhook(request.webhookUrl, request.serverName, request.regexFilter, request.delay, request.link)
             .then(response => sendResponse({ success: response.ok }))
             .catch(error => sendResponse({ success: false, error: error.message }));
         return true;
@@ -14,11 +14,11 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
  * @param {string} webhookUrl
  * @param {string} serverName
  * @param {string} regexFilter
- * @param {string} openingDelay
+ * @param {string} delay
  * @param {string} link
  * @returns {Promise<Response>}
  */
-function sendWebhook(webhookUrl, serverName, regexFilter, openingDelay, link) {
+function sendWebhook(webhookUrl, serverName, regexFilter, delay, link) {
     const ts = new Date().toLocaleString(
         undefined,
         {
@@ -46,7 +46,7 @@ function sendWebhook(webhookUrl, serverName, regexFilter, openingDelay, link) {
                     "fields": [
                         {
                             "name": "Delay",
-                            "value": `\`${openingDelay}ms\``,
+                            "value": `\`${delay}ms\``,
                             "inline": true
                         },
                         {

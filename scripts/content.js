@@ -36,9 +36,13 @@ async function removeDomElements() {
 
 /** Monitors the chat for links that match the specified regex
  * @param {RegExp} regexFilter The regular expression to match the links.
- * @param {*} delay The delay in milliseconds to wait before
+ * @param {number} delay The delay in milliseconds to wait before
+ * @param {boolean} notifyEnabled Whether to send a notification when a link is found.
+ * @param {boolean} openEnabled Whether to open the link automatically.
+ * @param {string} webhookUrl The URL of the webhook to send notifications.
+ * @param {string} serverName The name of the server to send
  */
-async function monitor(regexFilter, delay = 0) {
+async function monitor(regexFilter, delay = 0, notifyEnabled, openEnabled, webhookUrl, serverName) {
     const regex = new RegExp(regexFilter, 'i');
 
     const observer = new MutationObserver(async mutations => {
@@ -55,12 +59,27 @@ async function monitor(regexFilter, delay = 0) {
                         .filter(url => regex.test(url));
 
                     if (links.length > 0) {
-                        overlay(`Opening link on ${delay}ms...`, "rgba(91,201,53,0.8)");
-                        chrome.runtime.sendMessage({ type: "speak", message: 'Opening link...' });
-                        observer.disconnect();
-                        await sleep(delay);
-                        window.open(links[0], '_blank');
-                        return;
+                        if (notifyEnabled && webhookUrl) {
+                            overlay(`Sending webhook...`, "rgba(91,201,53,0.8)");
+                            chrome.runtime.sendMessage({ type: "sendWebhook", webhookUrl, serverName, regexFilter, delay, link: links[0] }, (response) => {
+                                if (chrome.runtime.lastError) console.error("Error sending webhook:", chrome.runtime.lastError.message);
+                                if (response?.success) console.log("Webhook test sent successfully");
+                                else console.error("Failed to send webhook:", response?.error);
+                            });
+                        }
+
+                        if (openEnabled) {
+                            await sleep(delay);
+                            overlay(`Opening link...`, "rgba(91,201,53,0.8)");
+                            chrome.runtime.sendMessage({ type: "speak", message: 'Opening link...' });
+                            window.open(links[0], '_blank');
+                            observer.disconnect();
+                            return;
+                        } else {
+                            observer.disconnect();
+                            await sleep(delay);
+                            monitor(regexFilter, delay, notifyEnabled, openEnabled, webhookUrl, serverName);
+                        }
                     }
                 }
             }
@@ -80,13 +99,15 @@ async function monitor(regexFilter, delay = 0) {
 
 async function main() {
     try {
-        const { channelUrl, regexFilter, openingDelay, monitoringStopped } = await getStorage();
+        const { channelUrl, regexFilter, delay, monitoringStopped, notifyEnabled, openEnabled, webhookUrl } = await getStorage();
         if (window.location.href === channelUrl && !monitoringStopped) {
             overlay('Ready to monitor this channel...');
             await sleep(2000);
+            const tabTitle = await waitForElement('title');
+            const serverName = tabTitle.textContent.split('|').pop().trim();
             await removeDomElements();
             await sleep(1000);
-            await monitor(regexFilter, openingDelay);
+            await monitor(regexFilter, delay, notifyEnabled, openEnabled, webhookUrl, serverName);
         }
     } catch (error) {
         console.error('Error in main:', error);
@@ -129,16 +150,13 @@ async function waitForElement(selector) {
 }
 
 /** Retrieves the settings from the local storage.
- * @returns {Promise<{channelUrl: string, regexFilter: string, openingDelay: number, monitoringStopped: boolean}>} A promise that resolves to the settings.
+ * @returns {Promise<{channelUrl: string, regexFilter: string, delay: number, monitoringStopped: boolean}>} A promise that resolves to the settings.
  */
 async function getStorage() {
     return new Promise((resolve) => {
-        chrome.storage.local.get(['channelUrl', 'regexFilter', 'openingDelay', 'monitoringStopped'], function (result) {
-            if (result.channelUrl) {
-                resolve(result);
-            } else {
-                console.log('Channel URL not found in storage.');
-            }
+        chrome.storage.local.get(['channelUrl', 'regexFilter', 'delay', 'monitoringStopped', 'notifyEnabled', 'openEnabled', 'webhookUrl'
+        ], function (result) {
+            resolve(result);
         });
     });
 }
