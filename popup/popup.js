@@ -3,18 +3,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('monitor').addEventListener('click', openDiscordUrl);
 
+    document.getElementById('open-links').addEventListener('click', toggleOpenLinks);
+    document.getElementById('notify-links').addEventListener('click', toggleNotifyLinks);
+
     document.getElementById('channelUrl').addEventListener('blur', saveSettings);
     document.getElementById('regexFilter').addEventListener('blur', saveSettings);
     document.getElementById('openingDelay').addEventListener('blur', saveSettings);
 });
 
 function loadSettings() {
-    chrome.storage.local.get(['channelUrl', 'regexFilter', 'openingDelay'], function (result) {
+    chrome.storage.local.get(
+        ['channelUrl', 'regexFilter', 'openingDelay', 'openEnabled', 'notifyEnabled'],
+        function (result) {
         if (result.channelUrl) {
             document.getElementById('channelUrl').value = result.channelUrl;
             document.getElementById('regexFilter').value = result.regexFilter || "";
             document.getElementById('openingDelay').value = result.openingDelay || 0;
         }
+
+        const openState = result.openEnabled === undefined ? true : result.openEnabled;
+        const notifyState = result.notifyEnabled === undefined ? true : result.notifyEnabled;
+        updateButtonState('open-links', openState);
+        updateButtonState('notify-links', notifyState);
     });
 }
 
@@ -70,4 +80,39 @@ function openDiscordUrl() {
             }
         });
     }
+}
+
+function updateButtonState(buttonId, isEnabled) {
+    const btn = document.getElementById(buttonId);
+    if (isEnabled) {
+        btn.classList.add('enabled');
+        btn.classList.remove('disabled');
+    } else {
+        btn.classList.add('disabled');
+        btn.classList.remove('enabled');
+    }
+}
+
+function toggleOpenLinks() {
+    chrome.storage.local.get(['openEnabled'], function (result) {
+        let current = result.openEnabled;
+        if (current === undefined) current = true;
+        const newState = !current;
+        chrome.storage.local.set({ openEnabled: newState }, function () {
+            updateButtonState('open-links', newState);
+            console.log('Open links toggled:', newState);
+        });
+    });
+}
+
+function toggleNotifyLinks() {
+    chrome.storage.local.get(['notifyEnabled'], function (result) {
+        let current = result.notifyEnabled;
+        if (current === undefined) current = true;
+        const newState = !current;
+        chrome.storage.local.set({ notifyEnabled: newState }, function () {
+            updateButtonState('notify-links', newState);
+            console.log('Notify links toggled:', newState);
+        });
+    });
 }
