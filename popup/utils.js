@@ -38,7 +38,7 @@ export function resetInputStyles(elementIds) {
     elementIds.forEach(id => {
         const inputElement = document.getElementById(id);
         inputElement.style.backgroundColor = "";
-        const parentContainer = inputElement.closest(".input-container");
+        const parentContainer = inputElement.closest(".form-field");
         if (parentContainer) {
             parentContainer.style.backgroundColor = "";
         }
@@ -51,7 +51,7 @@ export function resetInputStyles(elementIds) {
 export function highlightInvalidField(elementId) {
     const inputElement = document.getElementById(elementId);
     inputElement.style.backgroundColor = "rgba(190,25,43,0.2)";
-    const parentContainer = inputElement.closest(".input-container");
+    const parentContainer = inputElement.closest(".form-field");
     if (parentContainer) {
         parentContainer.style.backgroundColor = "rgba(190,25,43,0.2)";
     }
@@ -97,6 +97,6 @@ export function isValidNumber(value) {
  */
 export function updateButtonState(buttonId, isEnabled) {
     const button = document.getElementById(buttonId);
-    button.classList.toggle("enabled", isEnabled);
-    button.classList.toggle("disabled", !isEnabled);
+    button.classList.toggle("btn--enabled", isEnabled);
+    button.classList.toggle("btn--disabled", !isEnabled);
 }
