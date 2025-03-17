@@ -1,6 +1,5 @@
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     if (request.type === "speak") {
-        console.info(`Speaking: ${request.message}`);
         chrome.tts.speak(request.message);
     } else if (request.type === "sendWebhook") {
         sendWebhook(request.webhookUrl, request.serverName, request.regexFilter, request.delay, request.link)
@@ -66,7 +65,7 @@ function sendWebhook(webhookUrl, serverName, regexFilter, delay, link) {
                     }
                 }
             ],
-            "username": "Link notifyer",
+            "username": "Link notifier",
             "attachments": []
         })
     });

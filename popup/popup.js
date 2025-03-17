@@ -56,10 +56,19 @@ function loadSettings() {
         setInputValue(STORAGE_KEYS.REGEX_FILTER, settings.regexFilter, "");
         setInputValue(STORAGE_KEYS.DELAY, settings.delay, 0);
 
-        updateButtonState("open-links", settings.openEnabled ?? true);
-        updateButtonState("notify-links", settings.notifyEnabled ?? true);
+        if (settings.openEnabled === undefined) {
+            chrome.storage.local.set({ [STORAGE_KEYS.OPEN_ENABLED]: true });
+            settings.openEnabled = true;
+        }
+        updateButtonState("open-links", settings.openEnabled);
 
-        updateButtonLockState("monitor", [settings.openEnabled, settings.notifyEnabled]);
+        if (settings.notifyEnabled === undefined) {
+            chrome.storage.local.set({ [STORAGE_KEYS.NOTIFY_ENABLED]: true });
+            settings.notifyEnabled = true
+        }
+        updateButtonState("notify-links", settings.notifyEnabled);
+
+        updateButtonLockState("monitor", [settings.openEnabled ?? true, settings.notifyEnabled ?? true]);
     });
 }
 
@@ -70,7 +79,7 @@ function loadSettings() {
 function validateSettings(settings) {
     const errors = [];
 
-    if (!settings.channelUrl || !isValidUrl(settings.channelUrl)) {
+    if (settings.channelUrl && !isValidUrl(settings.channelUrl)) {
         errors.push(STORAGE_KEYS.CHANNEL_URL);
     }
     if (settings.webhookUrl && !isValidUrl(settings.webhookUrl)) {
@@ -92,7 +101,7 @@ function saveSettings() {
         channelUrl: getInputValue(STORAGE_KEYS.CHANNEL_URL),
         webhookUrl: getInputValue(STORAGE_KEYS.WEBHOOK_URL),
         regexFilter: getInputValue(STORAGE_KEYS.REGEX_FILTER),
-        delay: getInputValue(STORAGE_KEYS.DELAY)
+        delay: getInputValue(STORAGE_KEYS.DELAY),
     };
 
     resetInputStyles([STORAGE_KEYS.CHANNEL_URL, STORAGE_KEYS.WEBHOOK_URL, STORAGE_KEYS.REGEX_FILTER, STORAGE_KEYS.DELAY]);

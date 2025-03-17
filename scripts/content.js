@@ -8,6 +8,23 @@ chrome.runtime.onMessage.addListener(async function (request) {
 
 main().catch(error => console.error('Error in main:', error));
 
+async function main() {
+    try {
+        const { channelUrl, regexFilter, delay, monitoringStopped, notifyEnabled, openEnabled, webhookUrl } = await getStorage();
+        if (window.location.href === channelUrl && !monitoringStopped) {
+            overlay('Ready to monitor this channel...');
+            await sleep(2000);
+            const tabTitle = await waitForElement('title');
+            const serverName = tabTitle.textContent.split('|').pop().trim();
+            await removeDomElements();
+            await sleep(1000);
+            await monitor(regexFilter, delay, notifyEnabled, openEnabled, webhookUrl, serverName);
+        }
+    } catch (error) {
+        console.error('Error in main:', error);
+    }
+}
+
 
 /** Removes unnecessary DOM elements from Discord to improve UI.
  * CAUTION: This is a very fragile part and may break if Discord changes its class names.
@@ -59,7 +76,7 @@ async function monitor(regexFilter, delay = 0, notifyEnabled, openEnabled, webho
                         .filter(url => regex.test(url));
 
                     if (links.length > 0) {
-                        if (notifyEnabled && webhookUrl) {
+                        if (notifyEnabled) {
                             overlay(`Sending webhook...`, "rgba(91,201,53,0.8)");
                             chrome.runtime.sendMessage({ type: "sendWebhook", webhookUrl, serverName, regexFilter, delay, link: links[0] }, (response) => {
                                 if (chrome.runtime.lastError) console.error("Error sending webhook:", chrome.runtime.lastError.message);
@@ -69,13 +86,15 @@ async function monitor(regexFilter, delay = 0, notifyEnabled, openEnabled, webho
                         }
 
                         if (openEnabled) {
+                            // Stop monitoring if the link is opened
+                            observer.disconnect();
                             await sleep(delay);
                             overlay(`Opening link...`, "rgba(91,201,53,0.8)");
                             chrome.runtime.sendMessage({ type: "speak", message: 'Opening link...' });
                             window.open(links[0], '_blank');
-                            observer.disconnect();
                             return;
                         } else {
+                            // Restart monitoring after a delay if the link is not opened
                             observer.disconnect();
                             await sleep(delay);
                             monitor(regexFilter, delay, notifyEnabled, openEnabled, webhookUrl, serverName);
@@ -95,23 +114,6 @@ async function monitor(regexFilter, delay = 0, notifyEnabled, openEnabled, webho
         setStorage('monitoringStopped', true);
         window.location.reload();
     });
-}
-
-async function main() {
-    try {
-        const { channelUrl, regexFilter, delay, monitoringStopped, notifyEnabled, openEnabled, webhookUrl } = await getStorage();
-        if (window.location.href === channelUrl && !monitoringStopped) {
-            overlay('Ready to monitor this channel...');
-            await sleep(2000);
-            const tabTitle = await waitForElement('title');
-            const serverName = tabTitle.textContent.split('|').pop().trim();
-            await removeDomElements();
-            await sleep(1000);
-            await monitor(regexFilter, delay, notifyEnabled, openEnabled, webhookUrl, serverName);
-        }
-    } catch (error) {
-        console.error('Error in main:', error);
-    }
 }
 
 //#region Utils
