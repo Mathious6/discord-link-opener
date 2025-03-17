@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Discord link-opener",
   "description": "Automatically open Discord links in your browser after being filtered through a regular expression.",
-  "version": "1.0",
+  "version": "2.0",
   "permissions": [
     "storage",
     "tabs",
