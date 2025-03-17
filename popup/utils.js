@@ -7,6 +7,7 @@ export function addClickListener(elementId, handler) {
 }
 
 /** Add a blur listener to the element with the given id.
+ * `blur`: The focus is moved away from the input field.
  * @param {string} elementId
  * @param {Function} handler
  */
@@ -99,4 +100,12 @@ export function updateButtonState(buttonId, isEnabled) {
     const button = document.getElementById(buttonId);
     button.classList.toggle("btn--enabled", isEnabled);
     button.classList.toggle("btn--disabled", !isEnabled);
+}
+
+/** Disable the specified button unless at least one of the provided conditions is true.
+ * @param {string} elementId
+ * @param {boolean[]} conditions
+ */
+export function updateButtonLockState(elementId, conditions) {
+    document.getElementById(elementId).disabled = conditions.every(condition => !condition);
 }

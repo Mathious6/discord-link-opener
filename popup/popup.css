@@ -29,6 +29,10 @@ body {
     text-align: center;
 }
 
+.app__description {
+    text-align: center;
+}
+
 .btn {
     width: 100%;
     padding: 10px;
@@ -46,6 +50,10 @@ body {
 
 .btn--main:hover {
     background-color: rgba(var(--primary-color-rgb), 1);
+}
+
+.btn--main:disabled {
+    cursor: not-allowed;
 }
 
 .btn--feature.btn--enabled {
