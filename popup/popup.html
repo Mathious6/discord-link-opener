@@ -1,20 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Discord link-opener settings</title>
     <link href="popup.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
+
 <body>
-<div class="container">
-    <h2>Discord link-opener settings ⚙️</h2>
+    <div class="app">
+        <h1 class="app__title">Discord link-opener settings</h1>
 
-    <label for="channelUrl"></label><input id="channelUrl" placeholder="Channel URL" type="text">
-    <label for="regexFilter"></label><input id="regexFilter" placeholder="Regular Expression filter" type="text">
-    <label for="openingDelay"></label><input id="openingDelay" placeholder="Delay in ms" type="number">
+        <h3 class="app__title">
+            <a href="https://github.com/Mathious6/discord-link-opener/tree/main">Documentation</a> |
+            <a href="https://regexr.com/">Regex</a> |
+            <a href="https://github.com/Mathious6/discord-link-opener/tree/main">Source code</a>
+            </h4>
 
-    <button id="monitor">Monitor</button>
-</div>
+            <div class="app__inline-group">
+                <div class="form-field">
+                    <i class="form-field__icon fa-solid fa-filter"></i>
+                    <input class="form-field__input" id="regexFilter" placeholder="Regular Expression filter"
+                        type="text">
+                </div>
+                <div class="form-field">
+                    <i class="form-field__icon fa-solid fa-clock"></i>
+                    <input class="form-field__input" id="delay" placeholder="Delay in ms" type="number">
+                </div>
+            </div>
+
+            <div class="form-field">
+                <i class="form-field__icon fa-solid fa-link"></i>
+                <input class="form-field__input" id="channelUrl" placeholder="Monitor channel URL" type="text">
+            </div>
+
+            <div class="app__inline-group">
+                <div class="form-field">
+                    <i class="form-field__icon fa-solid fa-bell"></i>
+                    <input class="form-field__input" id="webhookUrl" placeholder="Notify webhook URL" type="password">
+                </div>
+                <button id="send-test-webhook" class="btn btn--icon">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <div class="app__inline-group">
+                <button id="open-links" class="btn btn--feature">Open</button>
+                <button id="notify-links" class="btn btn--feature">Notify</button>
+            </div>
+
+            <button id="monitor" class="btn btn--main">Monitor</button>
+    </div>
 </body>
-<script src="popup.js"></script>
+<script type="module" src="popup.js"></script>
+
 </html>

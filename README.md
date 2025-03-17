@@ -1,11 +1,10 @@
 # Discord link-opener 🔗
 
-This **Chrome** extension allows you to **automatically monitor and open links** from Discord in your browser.
-Thanks to regular expressions, you can automatically open links from your favorite websites without staying on Discord.
+This **Chrome** extension allows you to **automatically monitor, open links and notify** from Discord in your browser. Thanks to regular expressions, you can automatically open links from your favorite websites without staying on Discord.
 
-The extension will monitor the provided channel and open the first link that matches the regular expressions.
+The extension will monitor the provided channel, open the first link that matches the regular expressions and notify you when a link is opened.
 
-![demo_gif](./images/demo.gif)
+![demo_gif](./docs/demo.gif)
 
 ## How to use 📖
 
@@ -13,9 +12,15 @@ The extension will monitor the provided channel and open the first link that mat
 > Discord language must be set to English.
 
 1. **Install the extension:** Follow [these instructions](#installation-) to install the extension in your Chrome browser.
-2. **Open Discord:** Open Discord and click on the extension icon in the top right corner of your browser.
-3. **Customize the extension:** You have to fill the channel URL and optionally add regular expressions to match the links you want to open.
-4. **Enjoy the extension:** The extension will automatically open the links that match the regular expressions.
+2. **Open Discord:** Open Discord and click on the extension icon in the top right corner of your browser (this will not work if you are not on Discord).
+3. **Customize the extension:** You have to fill the channel URL to monitor, the delay between acions, the regular expressions to match the links you want to open (optional) and the [webhook URL](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) to send notifications.
+4. **Enjoy the extension:** The extension will automatically open the links that match the regular expressions and notify you when a link is opened following those rules:
+
+| Open  | Notify | Opens Link | Webhook sent? | Observes again? | Delay effect?                                                            |
+| :---: | :----: | :--------: | :-----------: | :-------------: | ------------------------------------------------------------------------ |
+|   ✅   |   ✅    |     ✅      |       ✅       |        ❌        | Webhook will be sent instantly and link will be opened after the delay   |
+|   ✅   |   ❌    |     ✅      |       ❌       |        ❌        | Link will be opened after the delay                                      |
+|   ❌   |   ✅    |     ❌      |       ✅       |        ✅        | Webhook will be sent instantly and it will observe again after the delay |
 
 ## Installation 📦
 
