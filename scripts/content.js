@@ -14,9 +14,9 @@ async function main() {
         if (window.location.href === channelUrl && !monitoringStopped) {
             overlay('Ready to monitor this channel...');
             await sleep(2000);
+            await removeDomElements();
             const tabTitle = await waitForElement('title');
             const serverName = tabTitle.textContent.split('|').pop().trim();
-            await removeDomElements();
             await sleep(1000);
             await monitor(regexFilter, delay, notifyEnabled, openEnabled, webhookUrl, serverName);
         }
