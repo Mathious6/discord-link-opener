@@ -18,6 +18,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
  * @returns {Promise<Response>}
  */
 function sendWebhook(webhookUrl, serverName, regexFilter, delay, link) {
+    const regexFilterString = regexFilter ? `\`${regexFilter}\`` : "None";
     const ts = new Date().toLocaleString(
         undefined,
         {
@@ -50,7 +51,7 @@ function sendWebhook(webhookUrl, serverName, regexFilter, delay, link) {
                         },
                         {
                             "name": "Regex",
-                            "value": `\`${regexFilter}\``,
+                            "value": regexFilterString,
                             "inline": true
                         },
                         {
