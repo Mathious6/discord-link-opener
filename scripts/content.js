@@ -12,9 +12,8 @@ async function main() {
     try {
         const { channelUrl, regexFilter, delay, monitoringStopped, notifyEnabled, openEnabled, webhookUrl } = await getStorage();
         if (window.location.href === channelUrl && !monitoringStopped) {
-            overlay('Ready to monitor this channel...');
-            await sleep(2000);
             await removeDomElements();
+            overlay('Ready to monitor this channel');
             const tabTitle = await waitForElement('title');
             const serverName = tabTitle.textContent.split('|').pop().trim();
             await sleep(1000);
@@ -30,7 +29,6 @@ async function main() {
  * CAUTION: This is a very fragile part and may break if Discord changes its class names.
  */
 async function removeDomElements() {
-    overlay('Waiting for Discord to load...');
     try {
         const [sideBar, titleBar, formBar] = await Promise.all([
             waitForElement('[class^="sidebar_"]'),
@@ -40,7 +38,6 @@ async function removeDomElements() {
         sideBar?.remove();
         titleBar?.remove();
         formBar?.remove();
-
     } catch (error) {
         console.error('Error removing key elements:', error);
     }
@@ -75,7 +72,7 @@ async function monitor(regexFilter, delay = 0, notifyEnabled, openEnabled, webho
 
                     if (links.length > 0) {
                         if (notifyEnabled) {
-                            overlay(`Sending webhook...`, "rgba(91,201,53,0.8)");
+                            overlay(`Sending webhook`, "rgba(91,201,53,0.8)");
                             chrome.runtime.sendMessage({ type: "sendWebhook", webhookUrl, serverName, regexFilter, delay, link: links[0] }, (response) => {
                                 if (chrome.runtime.lastError) console.error("Error sending webhook:", chrome.runtime.lastError.message);
                                 if (response?.success) console.log("Webhook test sent successfully");
@@ -87,7 +84,7 @@ async function monitor(regexFilter, delay = 0, notifyEnabled, openEnabled, webho
                             // Stop monitoring if the link is opened
                             observer.disconnect();
                             await sleep(delay);
-                            overlay(`Opening link...`, "rgba(91,201,53,0.8)");
+                            overlay(`Opening link`, "rgba(91,201,53,0.8)");
                             chrome.runtime.sendMessage({ type: "speak", message: 'Opening link...' });
                             window.open(links[0], '_blank');
                             return;
@@ -103,7 +100,7 @@ async function monitor(regexFilter, delay = 0, notifyEnabled, openEnabled, webho
         }
     });
 
-    overlay('Monitoring Discord...');
+    overlay('Monitoring Discord');
     observer.observe(document.body, { childList: true, subtree: true });
 
     const closeButton = document.getElementById("opener-overlay-close");
@@ -176,8 +173,7 @@ function overlay(message, color = "rgba(0, 0, 0, 0.6)") {
     } else {
         overlay = document.createElement("div");
         overlay.id = "opener-overlay";
-        overlay.style.position = "fixed";
-        overlay.style.top = "0";
+        overlay.style.position = "relative";
         overlay.style.width = "100%";
         overlay.style.height = "50px";
         overlay.style.backgroundColor = color;
@@ -185,7 +181,6 @@ function overlay(message, color = "rgba(0, 0, 0, 0.6)") {
         overlay.style.display = "flex";
         overlay.style.justifyContent = "center";
         overlay.style.alignItems = "center";
-        overlay.style.zIndex = "10000";
         overlay.style.fontSize = "24px";
         overlay.style.fontWeight = "bold";
 
@@ -207,7 +202,16 @@ function overlay(message, color = "rgba(0, 0, 0, 0.6)") {
         closeButton.style.cursor = "pointer";
         overlay.appendChild(closeButton);
 
-        document.body.appendChild(overlay);
+        document.body.insertBefore(overlay, document.body.firstChild);
+        
+        // Add blank space at the bottom of messages wrapper to accommodate overlay
+        const chatContent = document.querySelector('[class^="chatContent_"]');
+        if (chatContent) {
+            const blankSpace = document.createElement('div');
+            blankSpace.style.height = '50px';
+            blankSpace.style.width = '100%';
+            chatContent.appendChild(blankSpace);
+        }
     }
 }
 //#endregion
