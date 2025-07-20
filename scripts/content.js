@@ -32,13 +32,11 @@ async function main() {
 async function removeDomElements() {
     overlay('Waiting for Discord to load...');
     try {
-        const [guildsNav, sideBar, titleBar, formBar] = await Promise.all([
-            waitForElement('[aria-label="Servers sidebar"]'),
+        const [sideBar, titleBar, formBar] = await Promise.all([
             waitForElement('[class^="sidebar_"]'),
-            waitForElement('[aria-label="Channel header"]'),
+            waitForElement('[class^="subtitleContainer_"]'),
             waitForElement('[class^="form_"]')
         ]);
-        guildsNav?.remove();
         sideBar?.remove();
         titleBar?.remove();
         formBar?.remove();
