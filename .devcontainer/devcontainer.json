@@ -1,0 +1,32 @@
+{
+    "name": "chrome-ext-vite-react",
+    "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
+    "remoteUser": "vscode",
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "22"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.eslint": "explicit"
+                },
+                "files.eol": "\n",
+                "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+                "eslint.validate": ["typescript", "typescriptreact"],
+                "files.exclude": {
+                    "dist": true,
+                    "node_modules": true
+                }
+            }
+        }
+    }
+}
