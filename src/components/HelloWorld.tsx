@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function HelloWorld(props: { msg: string }) {
   const [count, setCount] = useState(0);
@@ -12,13 +12,13 @@ export default function HelloWorld(props: { msg: string }) {
           count is {count}
         </button>
         <p>
-          {' '}
-          Edit <code>src/components/HelloWorld.tsx</code> to test HMR{' '}
+          {" "}
+          Edit <code>src/components/HelloWorld.tsx</code> to test HMR{" "}
         </p>
       </div>
 
       <p>
-        Check out{' '}
+        Check out{" "}
         <a href="https://github.com/crxjs/create-crxjs" target="_blank" rel="noreferrer">
           create-crxjs
         </a>

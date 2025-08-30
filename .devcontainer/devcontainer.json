@@ -10,8 +10,10 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": [],
+      "extensions": ["esbenp.prettier-vscode"],
       "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "files.eol": "\n",
         "typescript.tsserver.experimental.enableProjectDiagnostics": true,
         "files.exclude": {
