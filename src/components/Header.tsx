@@ -1,7 +1,6 @@
 import discordLogo from "@/assets/discord.svg";
 import githubLogo from "@/assets/github.svg";
 import { DISCORD_URL, GITHUB_URL } from "@/config/constants";
-import "./Header.css";
 
 export default function Header() {
   return (
