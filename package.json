@@ -11,6 +11,7 @@
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" --fix"
   },
   "dependencies": {
+    "lucide-react": "^0.542.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
