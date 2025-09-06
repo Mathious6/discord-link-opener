@@ -1,4 +1,5 @@
 import discordLogo from "@/assets/discord.svg";
+import githubLogo from "@/assets/github.svg";
 import HelloWorld from "@/components/HelloWorld";
 import "./App.css";
 
@@ -12,7 +13,15 @@ export default function App() {
       >
         <img src={discordLogo} className="logo discord" alt="Discord logo" />
       </a>
-      <HelloWorld msg="Discord link-opener" />
+      <a
+        href="https://github.com/Mathious6/discord-link-opener"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <img src={githubLogo} className="logo github" alt="GitHub logo" />
+      </a>
+      <h1>Discord link-opener</h1>
+      <HelloWorld />
     </div>
   );
 }

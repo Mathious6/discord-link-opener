@@ -12,22 +12,10 @@
   transition: filter 300ms;
 }
 .logo.discord:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em rgb(88, 101, 242, 0.5));
 }
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.logo.github:hover {
+  filter: drop-shadow(0 0 2em rgb(36, 41, 47, 0.5));
 }
 
 .card {
