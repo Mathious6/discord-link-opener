@@ -24,4 +24,7 @@ export default defineConfig({
       origin: [/chrome-extension:\/\//],
     },
   },
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
 });
