@@ -1,9 +1,7 @@
 import discordLogo from "@/assets/discord.svg";
 import githubLogo from "@/assets/github.svg";
+import { DISCORD_URL, GITHUB_URL } from "@/config/constants";
 import "./Header.css";
-
-const DISCORD_URL = "https://discord.com/channels/@me";
-const GITHUB_URL = "https://github.com/Mathious6/discord-link-opener";
 
 export default function Header() {
   return (
