@@ -22,6 +22,9 @@
           "source.fixAll.eslint": "explicit",
           "source.organizeImports": "explicit"
         },
+        "editor.quickSuggestions": {
+          "strings": "on"
+        },
         "eslint.validate": [
           "typescript",
           "typescriptreact",
@@ -31,6 +34,9 @@
         ],
         "files.eol": "\n",
         "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+        "files.associations": {
+          "*.css": "tailwindcss"
+        },
         "files.exclude": {
           "dist": true,
           "node_modules": true,
