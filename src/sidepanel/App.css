@@ -11,11 +11,23 @@
   will-change: filter;
   transition: filter 300ms;
 }
-.logo.discord:hover {
-  filter: drop-shadow(0 0 2em rgb(88, 101, 242, 0.5));
+
+@media (prefers-color-scheme: light) {
+  .logo {
+    filter: brightness(0);
+  }
+  .logo:hover {
+    filter: brightness(0) drop-shadow(0 0 2em #00000080);
+  }
 }
-.logo.github:hover {
-  filter: drop-shadow(0 0 2em rgb(36, 41, 47, 0.5));
+
+@media (prefers-color-scheme: dark) {
+  .logo {
+    filter: brightness(0) invert(1);
+  }
+  .logo:hover {
+    filter: brightness(0) invert(1) drop-shadow(0 0 2em #ffffff80);
+  }
 }
 
 .card {
