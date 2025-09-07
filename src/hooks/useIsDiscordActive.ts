@@ -1,0 +1,41 @@
+import { isDiscordUrl } from "@/lib/url";
+import { useEffect, useState } from "react";
+
+export default function useIsDiscordActive() {
+  const [isDiscord, setIsDiscord] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const [tab] = await chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        const url = tab?.url ?? tab?.pendingUrl;
+        setIsDiscord(isDiscordUrl(url));
+      } catch {
+        setIsDiscord(false);
+      }
+    };
+
+    const onActivated = () => check();
+    const onUpdated = (
+      _tabId: number,
+      _info: chrome.tabs.OnUpdatedInfo,
+      tab: chrome.tabs.Tab
+    ) => {
+      if (tab.active) check();
+    };
+
+    check();
+    chrome.tabs.onActivated.addListener(onActivated);
+    chrome.tabs.onUpdated.addListener(onUpdated);
+
+    return () => {
+      chrome.tabs.onActivated.removeListener(onActivated);
+      chrome.tabs.onUpdated.removeListener(onUpdated);
+    };
+  }, []);
+
+  return isDiscord;
+}
