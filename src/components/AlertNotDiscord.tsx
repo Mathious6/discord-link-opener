@@ -14,7 +14,7 @@ export default function AlertNotDiscord() {
             href={CONFIG.DISCORD_URL}
             target="_blank"
             rel="noreferrer"
-            className="hover:text-destructive/70 underline underline-offset-2"
+            className="hover:text-destructive underline underline-offset-4"
           >
             Discord channel
           </a>{" "}
