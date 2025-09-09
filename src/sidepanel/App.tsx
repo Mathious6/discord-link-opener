@@ -1,6 +1,7 @@
 import AlertNotDiscord from "@/components/AlertNotDiscord";
 import AppHeader from "@/components/AppHeader";
-import TaskSettings from "@/components/TaskSettings";
+import SettingsGlobal from "@/components/SettingsGlobal";
+import SettingsTask from "@/components/SettingsTask";
 import { Separator } from "@/components/ui/separator";
 import useIsDiscordActive from "@/hooks/useIsDiscordActive";
 import { LoaderIcon } from "lucide-react";
@@ -15,7 +16,12 @@ export default function App() {
 
       {isDiscord == null && <LoaderIcon className="animate-spin" />}
       {isDiscord == false && <AlertNotDiscord />}
-      {isDiscord == true && <TaskSettings />}
+      {isDiscord == true && (
+        <>
+          <SettingsTask />
+          <SettingsGlobal />
+        </>
+      )}
     </div>
   );
 }

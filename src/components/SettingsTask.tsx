@@ -4,13 +4,13 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { PlayIcon, Square } from "lucide-react";
 
-export default function TaskSettings() {
+export default function SettingsTask() {
   return (
     <div className="overflow-hidden rounded-[0.5rem] border shadow-md">
       <div className="h-full">
-        <div className="container flex items-center justify-between py-4">
+        <div className="container flex items-center justify-between py-2">
           <h2 className="text-lg font-semibold">Task settings</h2>
-          <div className="flex items-center space-x-2">
+          <div className="flex space-x-2">
             <Button
               size="icon"
               className="bg-green-500/20 text-green-500 hover:bg-green-500/40 hover:text-green-600"
@@ -26,7 +26,7 @@ export default function TaskSettings() {
           </div>
         </div>
         <Separator />
-        <div className="container grid h-full w-full items-center gap-3 py-6">
+        <div className="container grid h-full w-full items-center gap-3 py-4">
           <Label htmlFor="regex">Regex filter</Label>
           <Input
             type="text"
