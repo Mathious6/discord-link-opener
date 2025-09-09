@@ -1,8 +1,12 @@
-export function isDiscordUrl(raw?: string): boolean {
+export function isDiscordChannelUrl(raw?: string): boolean {
   if (!raw) return false;
   try {
-    const { hostname } = new URL(raw);
-    return hostname === "discord.com" || hostname.endsWith(".discord.com");
+    const { hostname, pathname } = new URL(raw);
+    return (
+      hostname === "discord.com" &&
+      pathname.includes("/channels/") &&
+      !pathname.includes("/@me")
+    );
   } catch {
     return false;
   }

@@ -1,4 +1,4 @@
-import { isDiscordUrl } from "@/lib/url";
+import { isDiscordChannelUrl } from "@/lib/url";
 import { useEffect, useState } from "react";
 
 export default function useIsDiscordActive() {
@@ -12,7 +12,7 @@ export default function useIsDiscordActive() {
           currentWindow: true,
         });
         const url = tab?.url ?? tab?.pendingUrl;
-        setIsDiscord(isDiscordUrl(url));
+        setIsDiscord(isDiscordChannelUrl(url));
       } catch {
         setIsDiscord(false);
       }
