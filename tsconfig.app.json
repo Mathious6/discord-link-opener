@@ -42,9 +42,6 @@
     "baseUrl": ".",
     "paths": { "@/*": ["./src/*"] },
 
-    // Type definitions
-    "types": ["vite/client", "chrome"],
-
     // Modern features
     "useDefineForClassFields": true,
     "allowUnusedLabels": false,

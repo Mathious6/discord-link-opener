@@ -35,17 +35,7 @@ export default defineConfig([
       ...react.configs["jsx-runtime"].rules,
     },
   },
-  {
-    files: ["**/*.json"],
-    plugins: { json },
-    language: "json/json",
-    extends: ["json/recommended"],
-  },
-  {
-    files: ["**/*.md"],
-    plugins: { markdown },
-    language: "markdown/commonmark",
-    extends: ["markdown/recommended"],
-  },
+  json.configs.recommended,
+  markdown.configs.recommended,
   eslintConfigPrettier,
 ]);
