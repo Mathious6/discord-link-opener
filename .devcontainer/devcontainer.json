@@ -18,30 +18,29 @@
       "settings": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": "explicit",
-          "source.organizeImports": "explicit"
+        "editor.rulers": [80],
+        "editor.wordWrap": "bounded",
+        "editor.minimap.enabled": false,
+        "editor.guides.bracketPairs": true,
+
+        "typescript.suggest.autoImports": true,
+        "javascript.updateImportsOnFileMove.enabled": "always",
+        "typescript.preferences.includePackageJsonAutoImports": "auto",
+
+        "tailwindCSS.includeLanguages": {
+          "typescript": "typescript",
+          "typescriptreact": "typescriptreact"
         },
-        "editor.quickSuggestions": {
-          "strings": "on"
-        },
-        "eslint.validate": [
-          "typescript",
-          "typescriptreact",
-          "css",
-          "markdown",
-          "json"
-        ],
-        "files.eol": "\n",
-        "typescript.tsserver.experimental.enableProjectDiagnostics": true,
-        "files.associations": {
-          "*.css": "tailwindcss"
-        },
+
+        "files.autoSave": "onFocusChange",
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
         "files.exclude": {
           "dist": true,
           "node_modules": true,
           "package-lock.json": true
         },
+
         "explorer.fileNesting.enabled": true,
         "explorer.fileNesting.patterns": {
           "tsconfig.json": "tsconfig.*.json"
