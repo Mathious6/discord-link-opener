@@ -41,6 +41,10 @@
           "dist": true,
           "node_modules": true,
           "package-lock.json": true
+        },
+        "explorer.fileNesting.enabled": true,
+        "explorer.fileNesting.patterns": {
+          "tsconfig.json": "tsconfig.*.json"
         }
       }
     }
