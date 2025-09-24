@@ -22,6 +22,7 @@
         "editor.wordWrap": "bounded",
         "editor.minimap.enabled": false,
         "editor.guides.bracketPairs": true,
+        "editor.quickSuggestions": { "strings": "on" },
 
         "typescript.suggest.autoImports": true,
         "javascript.updateImportsOnFileMove.enabled": "always",
@@ -39,6 +40,10 @@
           "dist": true,
           "node_modules": true,
           "package-lock.json": true
+        },
+        "files.associations": {
+          "*.css": "tailwindcss",
+          "*.scss": "tailwindcss"
         },
 
         "explorer.fileNesting.enabled": true,
