@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import useSetting from "@/hooks/useSetting";
 
 export default function SettingsGlobal() {
+  const [webhook, setWebhook] = useSetting<string>("webhook", "");
+
   return (
     <div className="overflow-hidden rounded-[0.5rem] border shadow-md">
       <div className="h-full">
@@ -18,8 +21,10 @@ export default function SettingsGlobal() {
           <div className="flex gap-2">
             <Input
               id="webhook"
+              onChange={(e) => setWebhook(e.target.value)}
               placeholder="https://discord.com/api/webhooks/123/abc"
               type="url"
+              value={webhook}
             />
             <Button type="submit" variant="outline">
               <Bell />
