@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import json from "@eslint/json";
 import markdown from "@eslint/markdown";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
+import perfectionist from "eslint-plugin-perfectionist";
 import react from "eslint-plugin-react";
 import tailwind from "eslint-plugin-tailwindcss";
 import { defineConfig } from "eslint/config";
@@ -11,8 +12,11 @@ import tseslint from "typescript-eslint";
 export default defineConfig([
   tseslint.configs.recommended,
   {
+    ignores: ["src/components/ui/**"], // Shadcn UI components are not linted
+  },
+  {
     files: ["**/*.{ts,mts,cts,tsx}"],
-    plugins: { js, react, tailwindcss: tailwind },
+    plugins: { js, perfectionist: perfectionist, react, tailwindcss: tailwind },
     extends: [js.configs.recommended],
     languageOptions: {
       globals: {
@@ -35,6 +39,7 @@ export default defineConfig([
     rules: {
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
+      "perfectionist/sort-imports": "error",
     },
   },
   json.configs.recommended,
