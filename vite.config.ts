@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import zip from "vite-plugin-zip-pack";
+
 import manifest from "./manifest.config";
 import { name, version } from "./package.json";
 

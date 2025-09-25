@@ -40,6 +40,7 @@ export default defineConfig([
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
       "perfectionist/sort-imports": "error",
+      "perfectionist/sort-jsx-props": "error",
     },
   },
   json.configs.recommended,

@@ -1,5 +1,6 @@
-import { isDiscordChannelUrl } from "@/lib/url";
 import { useEffect, useState } from "react";
+
+import { isDiscordChannelUrl } from "@/lib/url";
 
 /**
  * Custom React hook that monitors whether the currently active browser tab

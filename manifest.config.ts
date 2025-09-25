@@ -1,4 +1,5 @@
 import { defineManifest } from "@crxjs/vite-plugin";
+
 import pkg from "./package.json";
 
 export default defineManifest({
@@ -16,7 +17,7 @@ export default defineManifest({
   background: {
     service_worker: "src/background.ts",
   },
-  permissions: ["sidePanel"],
+  permissions: ["sidePanel", "storage"],
   host_permissions: ["https://discord.com/channels/*"],
   content_scripts: [],
   side_panel: {

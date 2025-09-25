@@ -1,6 +1,7 @@
+import { AlertCircleIcon } from "lucide-react";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CONFIG } from "@/config/constants";
-import { AlertCircleIcon } from "lucide-react";
 
 export default function AlertNotDiscord() {
   return (
@@ -11,10 +12,10 @@ export default function AlertNotDiscord() {
         <p>
           Please open a{" "}
           <a
-            href={CONFIG.DISCORD_URL}
-            target="_blank"
-            rel="noreferrer"
             className="hover:text-destructive underline underline-offset-4"
+            href={CONFIG.DISCORD_URL}
+            rel="noreferrer"
+            target="_blank"
           >
             Discord channel
           </a>{" "}

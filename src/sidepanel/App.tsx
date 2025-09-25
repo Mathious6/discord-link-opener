@@ -1,10 +1,11 @@
+import { LoaderIcon } from "lucide-react";
+
 import AlertNotDiscord from "@/components/AlertNotDiscord";
 import AppHeader from "@/components/AppHeader";
 import SettingsGlobal from "@/components/SettingsGlobal";
 import SettingsTask from "@/components/SettingsTask";
 import { Separator } from "@/components/ui/separator";
 import useIsDiscordActive from "@/hooks/useIsDiscordActive";
-import { LoaderIcon } from "lucide-react";
 
 function renderContent(isDiscord: boolean | null) {
   switch (isDiscord) {
