@@ -13,12 +13,14 @@ export default defineConfig([
   {
     files: ["**/*.{ts,mts,cts,tsx}"],
     plugins: { js, react, tailwindcss: tailwind },
-    extends: ["js/recommended"],
+    extends: [js.configs.recommended],
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node,
+        ...globals.nodeBuiltin,
         chrome: "readonly",
+        __APP_VERSION__: "readonly",
+        __APP_NAME__: "readonly",
       },
       parserOptions: {
         ecmaFeatures: { jsx: true },
