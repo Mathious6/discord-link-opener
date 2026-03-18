@@ -31,6 +31,7 @@
     "@eslint/markdown": "^7.2.0",
     "@types/chrome": "^0.1.1",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
+    "@types/node": "^25.5.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.7.0",
