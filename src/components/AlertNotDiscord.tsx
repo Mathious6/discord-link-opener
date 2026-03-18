@@ -10,14 +10,14 @@ export default function AlertNotDiscord() {
       <AlertTitle>Unable to open settings</AlertTitle>
       <AlertDescription>
         <p>
-          Please open a{" "}
+          Please open{" "}
           <a
             className="hover:text-destructive underline underline-offset-4"
             href={CONFIG.DISCORD_URL}
             rel="noreferrer"
             target="_blank"
           >
-            Discord channel
+            Discord
           </a>{" "}
           and try again.
         </p>

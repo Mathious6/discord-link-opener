@@ -20,7 +20,7 @@ export default function useSetting<T>(key: string, defaultValue: T): SettingRetu
         setError(null);
 
         const result = await chrome.storage.local.get([key]);
-        if (result[key] !== undefined) setValue(result[key]);
+        if (result[key] !== undefined) setValue(result[key] as T);
         isInitialLoad.current = false;
       } catch (err) {
         console.error(`Failed to load ${key} from storage:`, err);
