@@ -30,6 +30,15 @@ export default function useSetting<T>(key: string, defaultValue: T): SettingRetu
     };
 
     loadFromStorage();
+
+    const onStorageChanged = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes[key]?.newValue !== undefined) {
+        setValue(changes[key].newValue as T);
+      }
+    };
+    chrome.storage.onChanged.addListener(onStorageChanged);
+
+    return () => chrome.storage.onChanged.removeListener(onStorageChanged);
   }, [key]);
 
   useEffect(() => {

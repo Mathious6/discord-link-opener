@@ -8,7 +8,7 @@ export const STORAGE_KEYS = {
   CHANNEL_URL: "channelUrl",
   REGEX_FILTER: "regexFilter",
   DELAY: "delay",
-  MONITORING_STOPPED: "monitoringStopped",
+  IS_MONITORING: "isMonitoring",
   OPEN_ENABLED: "openEnabled",
   NOTIFY_ENABLED: "notifyEnabled",
   WEBHOOK_URL: "webhookUrl",

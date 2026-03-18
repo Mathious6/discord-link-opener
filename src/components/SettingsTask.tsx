@@ -12,23 +12,41 @@ export default function SettingsTask() {
   const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0);
   const [openEnabled, setOpenEnabled] = useSetting<boolean>(STORAGE_KEYS.OPEN_ENABLED, true);
   const [notifyEnabled, setNotifyEnabled] = useSetting<boolean>(STORAGE_KEYS.NOTIFY_ENABLED, true);
+  const [isMonitoring] = useSetting<boolean>(STORAGE_KEYS.IS_MONITORING, false);
 
-  const canMonitor = openEnabled || notifyEnabled;
+  const canStart = !isMonitoring && (openEnabled || notifyEnabled);
 
   const handleMonitor = async () => {
-    if (!canMonitor) return;
+    if (!canStart) return;
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id || !tab.url?.startsWith("https://discord.com/")) return;
 
-    chrome.tabs.sendMessage(tab.id, { type: "startMonitoring" });
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.CHANNEL_URL]: tab.url,
+      [STORAGE_KEYS.IS_MONITORING]: true,
+    });
+
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: "startMonitoring" });
+    } catch {
+      chrome.tabs.reload(tab.id);
+    }
   };
 
   const handleStop = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) return;
 
-    chrome.tabs.sendMessage(tab.id, { type: "stopMonitoring" });
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.IS_MONITORING]: false,
+    });
+
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: "stopMonitoring" });
+    } catch {
+      /* content script already gone */
+    }
   };
 
   return (
@@ -39,7 +57,7 @@ export default function SettingsTask() {
           <div className="flex space-x-2">
             <Button
               className="bg-green-500/20 text-green-500 hover:bg-green-500/40 hover:text-green-600"
-              disabled={!canMonitor}
+              disabled={!canStart}
               onClick={handleMonitor}
               size="icon"
             >
@@ -47,6 +65,7 @@ export default function SettingsTask() {
             </Button>
             <Button
               className="bg-red-500/20 text-red-500 hover:bg-red-500/40 hover:text-red-600"
+              disabled={!isMonitoring}
               onClick={handleStop}
               size="icon"
             >
