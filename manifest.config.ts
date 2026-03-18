@@ -17,9 +17,14 @@ export default defineManifest({
   background: {
     service_worker: "src/background.ts",
   },
-  permissions: ["sidePanel", "storage"],
-  host_permissions: ["https://discord.com/channels/*"],
-  content_scripts: [],
+  permissions: ["sidePanel", "storage", "tts"],
+  host_permissions: ["https://discord.com/*"],
+  content_scripts: [
+    {
+      matches: ["https://discord.com/*"],
+      js: ["src/content/index.ts"],
+    },
+  ],
   side_panel: {
     default_path: "src/sidepanel/index.html",
   },
