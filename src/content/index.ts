@@ -79,11 +79,10 @@ function stopMonitoring(): void {
   currentObserver?.disconnect();
   currentObserver = null;
   isProcessing = false;
-  chrome.storage.local.set({
-    [STORAGE_KEYS.IS_MONITORING]: false,
-    [STORAGE_KEYS.MONITORING_LOGS]: [],
+  appendLog("Monitoring stopped").then(() => {
+    chrome.storage.local.set({ [STORAGE_KEYS.IS_MONITORING]: false });
+    window.location.reload();
   });
-  window.location.reload();
 }
 
 /**

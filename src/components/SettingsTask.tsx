@@ -124,20 +124,22 @@ export default function SettingsTask() {
               Notify
             </Button>
           </div>
-          {logs.length > 0 && (
-            <div className="max-h-32 overflow-y-auto rounded-md bg-zinc-950 p-2 font-mono text-xs text-green-400">
-              {logs.map((entry, i) => (
-                <div key={i}>{entry}</div>
-              ))}
-              {isMonitoring && (
-                <div className="flex items-center gap-1 text-green-600">
-                  <LoaderIcon className="h-3 w-3 animate-spin" />
-                  <span>waiting...</span>
-                </div>
-              )}
-              <div ref={logEndRef} />
-            </div>
-          )}
+          <div
+            className="overflow-y-auto rounded-md bg-zinc-950 p-2 font-mono text-xs leading-5 text-green-400"
+            style={{ height: "calc(5 * 1.25rem + 1rem)" }}
+          >
+            {logs.length === 0 && <span className="text-zinc-600">No activity yet.</span>}
+            {logs.map((entry, i) => (
+              <div key={i}>{entry}</div>
+            ))}
+            {isMonitoring && (
+              <div className="flex items-center gap-1 text-green-600">
+                <LoaderIcon className="h-3 w-3 animate-spin" />
+                <span>waiting...</span>
+              </div>
+            )}
+            <div ref={logEndRef} />
+          </div>
         </div>
       </div>
     </div>
