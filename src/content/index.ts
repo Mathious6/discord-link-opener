@@ -3,7 +3,7 @@ const STORAGE_KEYS = {
   REGEX_FILTER: "regexFilter",
   DELAY: "delay",
   IS_MONITORING: "isMonitoring",
-  MONITORING_STATUS: "monitoringStatus",
+  MONITORING_LOGS: "monitoringLogs",
   OPEN_ENABLED: "openEnabled",
   NOTIFY_ENABLED: "notifyEnabled",
   WEBHOOK_URL: "webhookUrl",
@@ -23,12 +23,16 @@ let currentObserver: MutationObserver | null = null;
 let isProcessing = false;
 
 /**
- * Writes the current monitoring status to chrome.storage for the side panel to display.
+ * Appends a timestamped log entry to the monitoring logs array in chrome.storage.
  *
- * @param message - Status text shown in the side panel alert (e.g. "Monitoring Discord")
+ * @param message - Log message to append (e.g. "Monitoring Discord")
  */
-function setStatus(message: string): void {
-  chrome.storage.local.set({ [STORAGE_KEYS.MONITORING_STATUS]: message });
+async function appendLog(message: string): Promise<void> {
+  const ts = new Date().toLocaleTimeString("en-US", { hour12: false });
+  const result = await chrome.storage.local.get([STORAGE_KEYS.MONITORING_LOGS]);
+  const logs = (result[STORAGE_KEYS.MONITORING_LOGS] as string[]) ?? [];
+  logs.push(`[${ts}] ${message}`);
+  await chrome.storage.local.set({ [STORAGE_KEYS.MONITORING_LOGS]: logs });
 }
 
 chrome.runtime.onMessage.addListener((request: { type: string }) => {
@@ -61,7 +65,7 @@ async function startMonitoring(): Promise<void> {
   if (!settings.openEnabled && !settings.notifyEnabled) return;
 
   await removeDomElements();
-  setStatus("Ready to monitor this channel");
+  await appendLog("Ready to monitor this channel");
 
   const tabTitle = document.querySelector("title");
   const serverName = tabTitle?.textContent?.split("|").pop()?.trim() ?? "Unknown";
@@ -77,7 +81,7 @@ function stopMonitoring(): void {
   isProcessing = false;
   chrome.storage.local.set({
     [STORAGE_KEYS.IS_MONITORING]: false,
-    [STORAGE_KEYS.MONITORING_STATUS]: "",
+    [STORAGE_KEYS.MONITORING_LOGS]: [],
   });
   window.location.reload();
 }
@@ -115,7 +119,7 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
           currentObserver?.disconnect();
 
           if (notifyEnabled) {
-            setStatus("Sending webhook");
+            appendLog("Sending webhook");
             chrome.runtime.sendMessage({
               type: "sendWebhook",
               webhookUrl,
@@ -128,12 +132,11 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
 
           if (openEnabled) {
             await sleep(delay);
-            setStatus("Opening link");
+            await appendLog("Opening link");
             chrome.runtime.sendMessage({ type: "speak", message: "Opening link..." });
             window.open(links[0], "_blank");
             chrome.storage.local.set({
               [STORAGE_KEYS.IS_MONITORING]: false,
-              [STORAGE_KEYS.MONITORING_STATUS]: "",
             });
             return;
           } else {
@@ -146,7 +149,7 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
     }
   });
 
-  setStatus("Monitoring Discord");
+  appendLog("Monitoring Discord");
   currentObserver.observe(document.body, { childList: true, subtree: true });
 }
 

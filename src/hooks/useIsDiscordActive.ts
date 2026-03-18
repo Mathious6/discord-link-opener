@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { isDiscordChannelUrl } from "@/lib/url";
+import { isDiscordChannelUrl } from "@/lib/validators";
 
 /**
  * Tracks whether the active tab is on discord.com via chrome.tabs API.

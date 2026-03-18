@@ -1,6 +1,6 @@
-import { ActivityIcon, PlayIcon, Square } from "lucide-react";
+import { PlayIcon, Square } from "lucide-react";
+import { useEffect, useRef } from "react";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,14 +8,19 @@ import { Separator } from "@/components/ui/separator";
 import { STORAGE_KEYS } from "@/config/constants";
 import useSetting from "@/hooks/useSetting";
 
-/** Monitoring controls: regex filter, delay, open/notify toggles, play/stop buttons, and live status. */
+/** Monitoring controls: regex filter, delay, open/notify toggles, play/stop buttons, and terminal log. */
 export default function SettingsTask() {
   const [regex, setRegex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "");
   const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0);
   const [openEnabled, setOpenEnabled] = useSetting<boolean>(STORAGE_KEYS.OPEN_ENABLED, true);
   const [notifyEnabled, setNotifyEnabled] = useSetting<boolean>(STORAGE_KEYS.NOTIFY_ENABLED, true);
   const [isMonitoring] = useSetting<boolean>(STORAGE_KEYS.IS_MONITORING, false);
-  const [status] = useSetting<string>(STORAGE_KEYS.MONITORING_STATUS, "");
+  const [logs] = useSetting<string[]>(STORAGE_KEYS.MONITORING_LOGS, []);
+  const logEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    logEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs]);
 
   const canStart = !isMonitoring && (openEnabled || notifyEnabled);
 
@@ -28,6 +33,7 @@ export default function SettingsTask() {
     await chrome.storage.local.set({
       [STORAGE_KEYS.CHANNEL_URL]: tab.url,
       [STORAGE_KEYS.IS_MONITORING]: true,
+      [STORAGE_KEYS.MONITORING_LOGS]: [],
     });
 
     try {
@@ -118,11 +124,13 @@ export default function SettingsTask() {
               Notify
             </Button>
           </div>
-          {isMonitoring && status && (
-            <Alert className="border-green-600/30 bg-green-600/10">
-              <ActivityIcon className="h-4 w-4 text-green-500" />
-              <AlertDescription className="text-green-400">{status}</AlertDescription>
-            </Alert>
+          {logs.length > 0 && (
+            <div className="max-h-32 overflow-y-auto rounded-md bg-zinc-950 p-2 font-mono text-xs text-green-400">
+              {logs.map((entry, i) => (
+                <div key={i}>{entry}</div>
+              ))}
+              <div ref={logEndRef} />
+            </div>
           )}
         </div>
       </div>
