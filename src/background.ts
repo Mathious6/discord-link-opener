@@ -76,7 +76,7 @@ function sendWebhook(
       content: null,
       embeds: [
         {
-          title: "New link detected",
+          title: "New link detected :bell:",
           description: link,
           color: 13547807,
           fields: [

@@ -105,9 +105,9 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
         if (links.length > 0) {
           isProcessing = true;
           currentObserver?.disconnect();
+          await appendLog("Link found");
 
           if (notifyEnabled) {
-            appendLog("Sending webhook");
             chrome.runtime.sendMessage({
               type: "sendWebhook",
               webhookUrl,
@@ -116,13 +116,14 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
               delay,
               link: links[0],
             });
+            await appendLog("Webhook sent");
           }
 
           if (openEnabled) {
             await sleep(delay);
-            await appendLog("Opening link");
             chrome.runtime.sendMessage({ type: "speak", message: "Opening link..." });
             window.open(links[0], "_blank");
+            await appendLog("Link opened");
             chrome.storage.local.set({
               [ck(STORAGE_KEYS.IS_MONITORING)]: false,
             });
@@ -164,7 +165,7 @@ async function waitForElement(selector: string): Promise<Element | null> {
   for (let i = 0; i < 100; i++) {
     const el = document.querySelector(selector);
     if (el) return el;
-    await sleep(100);
+    await sleep(50);
   }
   return null;
 }

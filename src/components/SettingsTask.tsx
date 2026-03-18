@@ -147,7 +147,9 @@ export default function SettingsTask({ tabUrl }: { tabUrl: string }) {
             className="overflow-y-auto rounded-md bg-zinc-950 p-2 font-mono text-xs leading-5 text-green-400"
             style={{ height: "calc(5 * 1.25rem + 1rem)" }}
           >
-            {logs.length === 0 && <span className="text-zinc-600">No activity yet.</span>}
+            {!isMonitoring && logs.length === 0 && (
+              <span className="text-zinc-600">No activity yet.</span>
+            )}
             {logs.map((entry, i) => (
               <div key={i}>{entry}</div>
             ))}
