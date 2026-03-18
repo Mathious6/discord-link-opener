@@ -4,6 +4,7 @@ import discordLogo from "@/assets/discord.svg";
 import { Badge } from "@/components/ui/badge";
 import { CONFIG } from "@/config/constants";
 
+/** Side panel header with Discord logo, app title, version badge, and GitHub link. */
 export default function AppHeader() {
   return (
     <div className="flex flex-col items-center gap-2">

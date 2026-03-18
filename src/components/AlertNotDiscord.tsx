@@ -3,6 +3,7 @@ import { AlertCircleIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CONFIG } from "@/config/constants";
 
+/** Shown when the active tab is not on discord.com. Prompts the user to navigate to Discord. */
 export default function AlertNotDiscord() {
   return (
     <Alert variant="destructive">

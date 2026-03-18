@@ -22,6 +22,11 @@ interface Settings {
 let currentObserver: MutationObserver | null = null;
 let isProcessing = false;
 
+/**
+ * Writes the current monitoring status to chrome.storage for the side panel to display.
+ *
+ * @param message - Status text shown in the side panel alert (e.g. "Monitoring Discord")
+ */
 function setStatus(message: string): void {
   chrome.storage.local.set({ [STORAGE_KEYS.MONITORING_STATUS]: message });
 }
@@ -38,6 +43,7 @@ chrome.runtime.onMessage.addListener((request: { type: string }) => {
 
 main().catch((error) => console.error("Error in main:", error));
 
+/** Auto-resumes monitoring on page reload if isMonitoring is true and URL matches the stored channel. */
 async function main(): Promise<void> {
   const settings = await getSettings();
   if (
@@ -49,6 +55,7 @@ async function main(): Promise<void> {
   }
 }
 
+/** Strips Discord UI distractions, resolves the server name from the page title, then starts the MutationObserver. */
 async function startMonitoring(): Promise<void> {
   const settings = await getSettings();
   if (!settings.openEnabled && !settings.notifyEnabled) return;
@@ -63,6 +70,7 @@ async function startMonitoring(): Promise<void> {
   monitor(settings, serverName);
 }
 
+/** Disconnects the observer, resets state in storage, and reloads the page to restore Discord UI. */
 function stopMonitoring(): void {
   currentObserver?.disconnect();
   currentObserver = null;
@@ -74,6 +82,14 @@ function stopMonitoring(): void {
   window.location.reload();
 }
 
+/**
+ * Observes DOM mutations for new Discord messages containing links matching the regex.
+ * Uses `isProcessing` guard to prevent async double-fire when mutations queue up.
+ * On match: sends webhook (if notify), opens link (if open) or re-observes (notify-only).
+ *
+ * @param settings - Current extension settings from chrome.storage
+ * @param serverName - Discord server name extracted from the page title
+ */
 async function monitor(settings: Settings, serverName: string): Promise<void> {
   const { regexFilter, delay = 0, notifyEnabled, openEnabled, webhookUrl } = settings;
   const regex = new RegExp(regexFilter || ".*", "i");
@@ -134,6 +150,7 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
   currentObserver.observe(document.body, { childList: true, subtree: true });
 }
 
+/** Removes Discord sidebar, subtitle bar, message form, and members panel to reduce distractions. Polls up to 10s per element. */
 async function removeDomElements(): Promise<void> {
   const [sideBar, titleBar, formBar] = await Promise.all([
     waitForElement('[class^="sidebar_"]'),
@@ -146,6 +163,12 @@ async function removeDomElements(): Promise<void> {
   document.querySelector('[class^="content_"] > [class^="container_"]')?.remove();
 }
 
+/**
+ * Polls the DOM for an element every 100ms, up to 100 attempts (10s).
+ *
+ * @param selector - CSS selector to query
+ * @returns The matched element, or null on timeout
+ */
 async function waitForElement(selector: string): Promise<Element | null> {
   for (let i = 0; i < 100; i++) {
     const el = document.querySelector(selector);
@@ -157,6 +180,11 @@ async function waitForElement(selector: string): Promise<Element | null> {
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * Reads all STORAGE_KEYS from chrome.storage.local.
+ *
+ * @returns The current extension settings as a typed Settings object
+ */
 async function getSettings(): Promise<Settings> {
   return new Promise((resolve) => {
     chrome.storage.local.get(Object.values(STORAGE_KEYS), (result) =>

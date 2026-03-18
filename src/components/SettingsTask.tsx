@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { STORAGE_KEYS } from "@/config/constants";
 import useSetting from "@/hooks/useSetting";
 
+/** Monitoring controls: regex filter, delay, open/notify toggles, play/stop buttons, and live status. */
 export default function SettingsTask() {
   const [regex, setRegex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "");
   const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0);

@@ -3,11 +3,13 @@ import React, { useState, useEffect, useRef } from "react";
 type SettingReturn<T> = [T, React.Dispatch<React.SetStateAction<T>>, string | null];
 
 /**
- * Generic custom hook for managing any setting with Chrome storage persistence.
+ * Syncs a React state value with chrome.storage.local, bidirectionally.
+ * Listens for external storage changes (e.g. from content script) via onChanged.
+ * Uses `isExternalUpdate` ref to prevent bounce-back writes when the change originated externally.
  *
- * @param key - The storage key to use for this setting
- * @param defaultValue - Default value to use if no stored value exists
- * @returns Array containing [value, setValue, error]
+ * @param key - The chrome.storage key to persist this setting under
+ * @param defaultValue - Fallback value used until the stored value is loaded
+ * @returns Tuple of [value, setValue, error]
  */
 export default function useSetting<T>(key: string, defaultValue: T): SettingReturn<T> {
   const [value, setValue] = useState<T>(defaultValue);

@@ -41,6 +41,16 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+/**
+ * Posts a Discord webhook with a rich embed containing the detected link metadata.
+ *
+ * @param webhookUrl - Discord webhook endpoint
+ * @param serverName - Discord server name for the embed field
+ * @param regexFilter - Regex pattern used for the embed field
+ * @param delay - Delay in ms applied before opening the link
+ * @param link - The detected URL to include in the embed
+ * @returns The fetch Response from the webhook POST
+ */
 function sendWebhook(
   webhookUrl: string,
   serverName: string,
