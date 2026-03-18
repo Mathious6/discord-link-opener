@@ -5,29 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { STORAGE_KEYS } from "@/config/constants";
-import useActiveTabUrl from "@/hooks/useActiveTabUrl";
+import { channelKey, STORAGE_KEYS } from "@/config/constants";
 import useSetting from "@/hooks/useSetting";
+import { isValidRegex } from "@/lib/validators";
 
 /** Monitoring controls: regex filter, delay, open/notify toggles, play/stop buttons, and terminal log. */
-export default function SettingsTask() {
-  const tabUrl = useActiveTabUrl();
-  const channelPrefix = `channel:${tabUrl}`;
+export default function SettingsTask({ tabUrl }: { tabUrl: string }) {
+  const prefix = `channel:${tabUrl}`;
 
-  const [regex, setRegex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "", channelPrefix);
-  const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0, channelPrefix);
+  const [regex, setRegex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "", prefix);
+  const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0, prefix);
   const [openEnabled, setOpenEnabled] = useSetting<boolean>(
     STORAGE_KEYS.OPEN_ENABLED,
     true,
-    channelPrefix
+    prefix
   );
   const [notifyEnabled, setNotifyEnabled] = useSetting<boolean>(
     STORAGE_KEYS.NOTIFY_ENABLED,
     true,
-    channelPrefix
+    prefix
   );
-  const [isMonitoring] = useSetting<boolean>(STORAGE_KEYS.IS_MONITORING, false, channelPrefix);
-  const [logs] = useSetting<string[]>(STORAGE_KEYS.MONITORING_LOGS, [], channelPrefix);
+  const [isMonitoring] = useSetting<boolean>(STORAGE_KEYS.IS_MONITORING, false, prefix);
+  const [logs] = useSetting<string[]>(STORAGE_KEYS.MONITORING_LOGS, [], prefix);
   const logEndRef = useRef<HTMLDivElement>(null);
   const [dots, setDots] = useState(".");
 
@@ -41,7 +40,8 @@ export default function SettingsTask() {
     return () => clearInterval(interval);
   }, [isMonitoring]);
 
-  const canStart = !isMonitoring && (openEnabled || notifyEnabled);
+  const hasValidRegex = regex === "" || isValidRegex(regex);
+  const canStart = !isMonitoring && (openEnabled || notifyEnabled) && hasValidRegex;
 
   const handleMonitor = async () => {
     if (!canStart) return;
@@ -50,8 +50,8 @@ export default function SettingsTask() {
     if (!tab?.id || !tab.url?.startsWith("https://discord.com/")) return;
 
     await chrome.storage.local.set({
-      [`${channelPrefix}:${STORAGE_KEYS.IS_MONITORING}`]: true,
-      [`${channelPrefix}:${STORAGE_KEYS.MONITORING_LOGS}`]: [],
+      [channelKey(tabUrl, STORAGE_KEYS.IS_MONITORING)]: true,
+      [channelKey(tabUrl, STORAGE_KEYS.MONITORING_LOGS)]: [],
     });
 
     try {
@@ -66,7 +66,7 @@ export default function SettingsTask() {
     if (!tab?.id) return;
 
     await chrome.storage.local.set({
-      [`${channelPrefix}:${STORAGE_KEYS.IS_MONITORING}`]: false,
+      [channelKey(tabUrl, STORAGE_KEYS.IS_MONITORING)]: false,
     });
 
     try {
@@ -104,6 +104,7 @@ export default function SettingsTask() {
         <div className="container grid h-full w-full items-center gap-3 py-4">
           <Label htmlFor="regex">Regex filter</Label>
           <Input
+            className={regex && !isValidRegex(regex) ? "border-red-500" : ""}
             id="regex"
             onChange={(e) => setRegex(e.target.value)}
             placeholder="ldlc.com"

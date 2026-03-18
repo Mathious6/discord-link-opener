@@ -11,8 +11,6 @@ import { isValidUrl } from "@/lib/validators";
 /** Webhook URL configuration with a test button that sends a sample embed to verify the webhook works. */
 export default function SettingsGlobal() {
   const [webhookUrl, setWebhookUrl] = useSetting<string>(STORAGE_KEYS.WEBHOOK_URL, "");
-  const [regex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "");
-  const [delay] = useSetting<number>(STORAGE_KEYS.DELAY, 0);
 
   const handleTestWebhook = () => {
     if (!webhookUrl) return;
@@ -21,8 +19,8 @@ export default function SettingsGlobal() {
       type: "sendWebhook",
       webhookUrl,
       serverName: "Test Server",
-      regexFilter: regex,
-      delay,
+      regexFilter: ".*",
+      delay: 0,
       link: CONFIG.GITHUB_URL,
     });
   };

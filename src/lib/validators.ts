@@ -19,7 +19,7 @@ export function isValidUrl(value: string): boolean {
  * @param raw - The URL string to check
  * @returns `true` if the hostname is discord.com
  */
-export function isDiscordChannelUrl(raw?: string): boolean {
+export function isDiscordUrl(raw?: string): boolean {
   if (!raw) return false;
   try {
     const { hostname } = new URL(raw);
@@ -42,14 +42,4 @@ export function isValidRegex(value: string): boolean {
   } catch {
     return false;
   }
-}
-
-/**
- * Checks that the value is a non-negative number.
- *
- * @param value - String or number to validate
- * @returns `true` if the value converts to a number >= 0
- */
-export function isValidNumber(value: string | number): boolean {
-  return !isNaN(Number(value)) && Number(value) >= 0;
 }

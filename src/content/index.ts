@@ -1,12 +1,4 @@
-const STORAGE_KEYS = {
-  REGEX_FILTER: "regexFilter",
-  DELAY: "delay",
-  IS_MONITORING: "isMonitoring",
-  MONITORING_LOGS: "monitoringLogs",
-  OPEN_ENABLED: "openEnabled",
-  NOTIFY_ENABLED: "notifyEnabled",
-  WEBHOOK_URL: "webhookUrl",
-} as const;
+import { channelKey, STORAGE_KEYS } from "@/config/constants";
 
 interface Settings {
   regexFilter: string;
@@ -17,7 +9,7 @@ interface Settings {
   webhookUrl: string;
 }
 
-const channelKey = (key: string) => `channel:${window.location.href}:${key}`;
+const ck = (key: string) => channelKey(window.location.href, key);
 
 let currentObserver: MutationObserver | null = null;
 let isProcessing = false;
@@ -29,7 +21,7 @@ let isProcessing = false;
  */
 async function appendLog(message: string): Promise<void> {
   const ts = new Date().toLocaleTimeString("en-US", { hour12: false });
-  const key = channelKey(STORAGE_KEYS.MONITORING_LOGS);
+  const key = ck(STORAGE_KEYS.MONITORING_LOGS);
   const result = await chrome.storage.local.get([key]);
   const logs = (result[key] as string[]) ?? [];
   logs.push(`[${ts}] ${message}`);
@@ -77,7 +69,7 @@ function stopMonitoring(): void {
   currentObserver = null;
   isProcessing = false;
   appendLog("Monitoring stopped").then(() => {
-    chrome.storage.local.set({ [channelKey(STORAGE_KEYS.IS_MONITORING)]: false });
+    chrome.storage.local.set({ [ck(STORAGE_KEYS.IS_MONITORING)]: false });
     window.location.reload();
   });
 }
@@ -132,7 +124,7 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
             chrome.runtime.sendMessage({ type: "speak", message: "Opening link..." });
             window.open(links[0], "_blank");
             chrome.storage.local.set({
-              [channelKey(STORAGE_KEYS.IS_MONITORING)]: false,
+              [ck(STORAGE_KEYS.IS_MONITORING)]: false,
             });
             return;
           } else {
@@ -186,23 +178,23 @@ const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms
  * @returns The current extension settings as a typed Settings object
  */
 async function getSettings(): Promise<Settings> {
-  const keys = [
-    channelKey(STORAGE_KEYS.REGEX_FILTER),
-    channelKey(STORAGE_KEYS.DELAY),
-    channelKey(STORAGE_KEYS.OPEN_ENABLED),
-    channelKey(STORAGE_KEYS.NOTIFY_ENABLED),
-    channelKey(STORAGE_KEYS.IS_MONITORING),
-    STORAGE_KEYS.WEBHOOK_URL,
-  ];
+  const channelKeys = [
+    STORAGE_KEYS.REGEX_FILTER,
+    STORAGE_KEYS.DELAY,
+    STORAGE_KEYS.OPEN_ENABLED,
+    STORAGE_KEYS.NOTIFY_ENABLED,
+    STORAGE_KEYS.IS_MONITORING,
+  ] as const;
 
+  const keys = [...channelKeys.map(ck), STORAGE_KEYS.WEBHOOK_URL];
   const result = await chrome.storage.local.get(keys);
 
   return {
-    regexFilter: (result[channelKey(STORAGE_KEYS.REGEX_FILTER)] as string) ?? "",
-    delay: (result[channelKey(STORAGE_KEYS.DELAY)] as number) ?? 0,
-    openEnabled: (result[channelKey(STORAGE_KEYS.OPEN_ENABLED)] as boolean) ?? true,
-    notifyEnabled: (result[channelKey(STORAGE_KEYS.NOTIFY_ENABLED)] as boolean) ?? true,
-    isMonitoring: (result[channelKey(STORAGE_KEYS.IS_MONITORING)] as boolean) ?? false,
+    regexFilter: (result[ck(STORAGE_KEYS.REGEX_FILTER)] as string) ?? "",
+    delay: (result[ck(STORAGE_KEYS.DELAY)] as number) ?? 0,
+    openEnabled: (result[ck(STORAGE_KEYS.OPEN_ENABLED)] as boolean) ?? true,
+    notifyEnabled: (result[ck(STORAGE_KEYS.NOTIFY_ENABLED)] as boolean) ?? true,
+    isMonitoring: (result[ck(STORAGE_KEYS.IS_MONITORING)] as boolean) ?? false,
     webhookUrl: (result[STORAGE_KEYS.WEBHOOK_URL] as string) ?? "",
   };
 }

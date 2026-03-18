@@ -5,35 +5,24 @@ import AppHeader from "@/components/AppHeader";
 import SettingsGlobal from "@/components/SettingsGlobal";
 import SettingsTask from "@/components/SettingsTask";
 import { Separator } from "@/components/ui/separator";
-import useIsDiscordActive from "@/hooks/useIsDiscordActive";
-
-function renderContent(isDiscord: boolean | null) {
-  switch (isDiscord) {
-    case null:
-      return <LoaderIcon className="animate-spin" />;
-    case false:
-      return <AlertNotDiscord />;
-    case true:
-      return (
-        <>
-          <SettingsTask />
-          <SettingsGlobal />
-        </>
-      );
-    default:
-      return null;
-  }
-}
+import useActiveTab from "@/hooks/useActiveTab";
 
 export default function App() {
-  const isDiscord: boolean | null = useIsDiscordActive();
+  const { isDiscord, tabUrl } = useActiveTab();
 
   return (
     <div className="flex flex-col gap-4 p-4">
       <AppHeader />
       <Separator />
 
-      {renderContent(isDiscord)}
+      {isDiscord === null && <LoaderIcon className="animate-spin" />}
+      {isDiscord === false && <AlertNotDiscord />}
+      {isDiscord === true && (
+        <>
+          <SettingsTask tabUrl={tabUrl} />
+          <SettingsGlobal />
+        </>
+      )}
     </div>
   );
 }
