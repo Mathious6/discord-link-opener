@@ -1,3 +1,87 @@
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
-  .catch((error) => console.error(error));
+  .catch((error: unknown) => console.error(error));
+
+interface ExtensionMessage {
+  type: "speak" | "sendWebhook";
+  message?: string;
+  webhookUrl?: string;
+  serverName?: string;
+  regexFilter?: string;
+  delay?: number;
+  link?: string;
+}
+
+chrome.runtime.onMessage.addListener(
+  (
+    request: ExtensionMessage,
+    _sender: chrome.runtime.MessageSender,
+    // eslint-disable-next-line no-unused-vars
+    sendResponse: (d: { success: boolean; error?: string }) => void
+  ): boolean | undefined => {
+    if (request.type === "speak" && request.message) {
+      chrome.tts.speak(request.message);
+      return undefined;
+    }
+
+    if (request.type === "sendWebhook") {
+      sendWebhook(
+        request.webhookUrl ?? "",
+        request.serverName ?? "Unknown",
+        request.regexFilter ?? "",
+        request.delay ?? 0,
+        request.link ?? ""
+      )
+        .then((res) => sendResponse({ success: res.ok }))
+        .catch((err: Error) => sendResponse({ success: false, error: err.message }));
+      return true;
+    }
+
+    return undefined;
+  }
+);
+
+function sendWebhook(
+  webhookUrl: string,
+  serverName: string,
+  regexFilter: string,
+  delay: number,
+  link: string
+): Promise<Response> {
+  const regexValue = regexFilter ? `\`${regexFilter}\`` : "None";
+  const ts = new Date().toLocaleString(undefined, {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    fractionalSecondDigits: 3,
+  });
+
+  return fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content: null,
+      embeds: [
+        {
+          title: "New link detected",
+          description: link,
+          color: 13547807,
+          fields: [
+            { name: "Delay", value: `\`${delay}ms\``, inline: true },
+            { name: "Regex", value: regexValue, inline: true },
+            { name: "Server", value: `\`${serverName}\``, inline: true },
+          ],
+          footer: {
+            text: `Discord link-opener \u2022 ${ts}`,
+            icon_url: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
+          },
+        },
+      ],
+      username: "Link notifier",
+      attachments: [],
+    }),
+  });
+}
