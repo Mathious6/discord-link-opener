@@ -1,5 +1,9 @@
 {
   "name": "chrome-ext-vite-react",
+  "runArgs": [
+    "--name",
+    "discord-link-opener"
+  ],
   "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
   "remoteUser": "vscode",
   "postCreateCommand": "bash .devcontainer/post-create.sh",
