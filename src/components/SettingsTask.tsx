@@ -1,4 +1,4 @@
-import { PlayIcon, Square } from "lucide-react";
+import { LoaderIcon, PlayIcon, Square } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -129,6 +129,12 @@ export default function SettingsTask() {
               {logs.map((entry, i) => (
                 <div key={i}>{entry}</div>
               ))}
+              {isMonitoring && (
+                <div className="flex items-center gap-1 text-green-600">
+                  <LoaderIcon className="h-3 w-3 animate-spin" />
+                  <span>waiting...</span>
+                </div>
+              )}
               <div ref={logEndRef} />
             </div>
           )}
