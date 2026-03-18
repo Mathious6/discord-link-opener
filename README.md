@@ -1,52 +1,49 @@
-# React + Vite + CRXJS
+# Discord link-opener
 
-This template helps you quickly start developing Chrome extensions with React, TypeScript and Vite. It includes the CRXJS Vite plugin for seamless Chrome extension development.
+A **Chrome extension** that automatically monitors Discord channels for links matching a regular expression, opens them in your browser, and optionally sends webhook notifications.
+
+![demo_gif](./docs/demo.gif)
 
 ## Features
 
-- React with TypeScript
-- TypeScript support
-- Vite build tool
-- CRXJS Vite plugin integration
-- Chrome extension manifest configuration
+- Monitor a specific Discord channel for new messages containing links
+- Filter links using a configurable regular expression
+- Automatically open matching links (with configurable delay)
+- Send Discord webhook notifications when a link is detected
+- Text-to-speech alert on link open
+- Side panel UI for easy configuration
+- Settings persisted in Chrome storage
 
-## Quick Start
+## How to use
 
-1. Install dependencies:
+> [!WARNING]
+> The extension might not work with some Discord languages. Tested with `en`, `fr` and `es`.
 
-```bash
-npm install
-```
+1. **Install the extension** (see [Installation](#installation))
+2. **Open Discord** and navigate to any server page
+3. **Click the extension icon** to open the side panel
+4. **Configure settings**:
+   - **Channel URL**: the Discord channel URL to monitor
+   - **Regex filter**: regular expression to match links (optional)
+   - **Delay**: delay in milliseconds before opening a link
+   - **Open / Notify**: toggle auto-open and webhook notifications
+   - **Webhook URL**: a [Discord webhook URL](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) for notifications
+5. **Click the play button** to start monitoring
 
-2. Start development server:
+| Open | Notify | Opens link | Webhook sent | Observes again | Delay applies to                                |
+| :--: | :----: | :--------: | :----------: | :------------: | ----------------------------------------------- |
+|  ON  |   ON   |    Yes     |     Yes      |       No       | Link opened after delay, webhook sent instantly |
+|  ON  |  OFF   |    Yes     |      No      |       No       | Link opened after delay                         |
+| OFF  |   ON   |     No     |     Yes      |      Yes       | Re-observe after delay, webhook sent instantly  |
 
-```bash
-npm run dev
-```
+## Installation
 
-3. Open Chrome and navigate to `chrome://extensions/`, enable "Developer mode", and load the unpacked extension from the `dist` directory.
+1. Download the latest `.zip` from the [Releases](https://github.com/Mathious6/discord-link-opener/releases) page
+2. Unzip the downloaded file
+3. Open Chrome and go to `chrome://extensions/`
+4. Enable **Developer mode** (top right)
+5. Click **Load unpacked** and select the unzipped folder
 
-4. Build for production:
+## Contributing
 
-```bash
-npm run build
-```
-
-## Project Structure
-
-- `src/popup/` - Extension popup UI
-- `src/content/` - Content scripts
-- `manifest.config.ts` - Chrome extension manifest configuration
-
-## Documentation
-
-- [React Documentation](https://reactjs.org/)
-- [Vite Documentation](https://vitejs.dev/)
-- [CRXJS Documentation](https://crxjs.dev/vite-plugin)
-
-## Chrome Extension Development Notes
-
-- Use `manifest.config.ts` to configure your extension
-- The CRXJS plugin automatically handles manifest generation
-- Content scripts should be placed in `src/content/`
-- Popup UI should be placed in `src/popup/`
+Open an issue or pull request to suggest features, report bugs, or contribute code.
