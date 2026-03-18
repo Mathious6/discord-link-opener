@@ -1,5 +1,6 @@
-import { PlayIcon, Square } from "lucide-react";
+import { ActivityIcon, PlayIcon, Square } from "lucide-react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ export default function SettingsTask() {
   const [openEnabled, setOpenEnabled] = useSetting<boolean>(STORAGE_KEYS.OPEN_ENABLED, true);
   const [notifyEnabled, setNotifyEnabled] = useSetting<boolean>(STORAGE_KEYS.NOTIFY_ENABLED, true);
   const [isMonitoring] = useSetting<boolean>(STORAGE_KEYS.IS_MONITORING, false);
+  const [status] = useSetting<string>(STORAGE_KEYS.MONITORING_STATUS, "");
 
   const canStart = !isMonitoring && (openEnabled || notifyEnabled);
 
@@ -115,6 +117,12 @@ export default function SettingsTask() {
               Notify
             </Button>
           </div>
+          {isMonitoring && status && (
+            <Alert className="border-green-600/30 bg-green-600/10">
+              <ActivityIcon className="h-4 w-4 text-green-500" />
+              <AlertDescription className="text-green-400">{status}</AlertDescription>
+            </Alert>
+          )}
         </div>
       </div>
     </div>

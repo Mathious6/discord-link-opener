@@ -9,6 +9,7 @@ export const STORAGE_KEYS = {
   REGEX_FILTER: "regexFilter",
   DELAY: "delay",
   IS_MONITORING: "isMonitoring",
+  MONITORING_STATUS: "monitoringStatus",
   OPEN_ENABLED: "openEnabled",
   NOTIFY_ENABLED: "notifyEnabled",
   WEBHOOK_URL: "webhookUrl",
