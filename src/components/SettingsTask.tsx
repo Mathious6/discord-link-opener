@@ -1,26 +1,45 @@
-import { LoaderIcon, PlayIcon, Square } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { PlayIcon, Square } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { STORAGE_KEYS } from "@/config/constants";
+import useActiveTabUrl from "@/hooks/useActiveTabUrl";
 import useSetting from "@/hooks/useSetting";
 
 /** Monitoring controls: regex filter, delay, open/notify toggles, play/stop buttons, and terminal log. */
 export default function SettingsTask() {
-  const [regex, setRegex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "");
-  const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0);
-  const [openEnabled, setOpenEnabled] = useSetting<boolean>(STORAGE_KEYS.OPEN_ENABLED, true);
-  const [notifyEnabled, setNotifyEnabled] = useSetting<boolean>(STORAGE_KEYS.NOTIFY_ENABLED, true);
-  const [isMonitoring] = useSetting<boolean>(STORAGE_KEYS.IS_MONITORING, false);
-  const [logs] = useSetting<string[]>(STORAGE_KEYS.MONITORING_LOGS, []);
+  const tabUrl = useActiveTabUrl();
+  const channelPrefix = `channel:${tabUrl}`;
+
+  const [regex, setRegex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "", channelPrefix);
+  const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0, channelPrefix);
+  const [openEnabled, setOpenEnabled] = useSetting<boolean>(
+    STORAGE_KEYS.OPEN_ENABLED,
+    true,
+    channelPrefix
+  );
+  const [notifyEnabled, setNotifyEnabled] = useSetting<boolean>(
+    STORAGE_KEYS.NOTIFY_ENABLED,
+    true,
+    channelPrefix
+  );
+  const [isMonitoring] = useSetting<boolean>(STORAGE_KEYS.IS_MONITORING, false, channelPrefix);
+  const [logs] = useSetting<string[]>(STORAGE_KEYS.MONITORING_LOGS, [], channelPrefix);
   const logEndRef = useRef<HTMLDivElement>(null);
+  const [dots, setDots] = useState(".");
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [logs]);
+
+  useEffect(() => {
+    if (!isMonitoring) return;
+    const interval = setInterval(() => setDots((d) => (d.length >= 3 ? "." : d + ".")), 500);
+    return () => clearInterval(interval);
+  }, [isMonitoring]);
 
   const canStart = !isMonitoring && (openEnabled || notifyEnabled);
 
@@ -31,9 +50,8 @@ export default function SettingsTask() {
     if (!tab?.id || !tab.url?.startsWith("https://discord.com/")) return;
 
     await chrome.storage.local.set({
-      [STORAGE_KEYS.CHANNEL_URL]: tab.url,
-      [STORAGE_KEYS.IS_MONITORING]: true,
-      [STORAGE_KEYS.MONITORING_LOGS]: [],
+      [`${channelPrefix}:${STORAGE_KEYS.IS_MONITORING}`]: true,
+      [`${channelPrefix}:${STORAGE_KEYS.MONITORING_LOGS}`]: [],
     });
 
     try {
@@ -48,7 +66,7 @@ export default function SettingsTask() {
     if (!tab?.id) return;
 
     await chrome.storage.local.set({
-      [STORAGE_KEYS.IS_MONITORING]: false,
+      [`${channelPrefix}:${STORAGE_KEYS.IS_MONITORING}`]: false,
     });
 
     try {
@@ -132,12 +150,7 @@ export default function SettingsTask() {
             {logs.map((entry, i) => (
               <div key={i}>{entry}</div>
             ))}
-            {isMonitoring && (
-              <div className="flex items-center gap-1 text-green-600">
-                <LoaderIcon className="h-3 w-3 animate-spin" />
-                <span>waiting...</span>
-              </div>
-            )}
+            {isMonitoring && <div className="text-green-600">waiting{dots}</div>}
             <div ref={logEndRef} />
           </div>
         </div>

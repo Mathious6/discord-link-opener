@@ -5,7 +5,6 @@ export const CONFIG = {
 } as const;
 
 export const STORAGE_KEYS = {
-  CHANNEL_URL: "channelUrl",
   REGEX_FILTER: "regexFilter",
   DELAY: "delay",
   IS_MONITORING: "isMonitoring",

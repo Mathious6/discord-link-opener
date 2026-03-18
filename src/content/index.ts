@@ -1,5 +1,4 @@
 const STORAGE_KEYS = {
-  CHANNEL_URL: "channelUrl",
   REGEX_FILTER: "regexFilter",
   DELAY: "delay",
   IS_MONITORING: "isMonitoring",
@@ -10,7 +9,6 @@ const STORAGE_KEYS = {
 } as const;
 
 interface Settings {
-  channelUrl: string;
   regexFilter: string;
   delay: number;
   isMonitoring: boolean;
@@ -18,6 +16,8 @@ interface Settings {
   notifyEnabled: boolean;
   webhookUrl: string;
 }
+
+const channelKey = (key: string) => `channel:${window.location.href}:${key}`;
 
 let currentObserver: MutationObserver | null = null;
 let isProcessing = false;
@@ -29,10 +29,11 @@ let isProcessing = false;
  */
 async function appendLog(message: string): Promise<void> {
   const ts = new Date().toLocaleTimeString("en-US", { hour12: false });
-  const result = await chrome.storage.local.get([STORAGE_KEYS.MONITORING_LOGS]);
-  const logs = (result[STORAGE_KEYS.MONITORING_LOGS] as string[]) ?? [];
+  const key = channelKey(STORAGE_KEYS.MONITORING_LOGS);
+  const result = await chrome.storage.local.get([key]);
+  const logs = (result[key] as string[]) ?? [];
   logs.push(`[${ts}] ${message}`);
-  await chrome.storage.local.set({ [STORAGE_KEYS.MONITORING_LOGS]: logs });
+  await chrome.storage.local.set({ [key]: logs });
 }
 
 chrome.runtime.onMessage.addListener((request: { type: string }) => {
@@ -47,14 +48,10 @@ chrome.runtime.onMessage.addListener((request: { type: string }) => {
 
 main().catch((error) => console.error("Error in main:", error));
 
-/** Auto-resumes monitoring on page reload if isMonitoring is true and URL matches the stored channel. */
+/** Auto-resumes monitoring on page reload if this channel's isMonitoring is true. */
 async function main(): Promise<void> {
   const settings = await getSettings();
-  if (
-    settings.isMonitoring &&
-    settings.channelUrl &&
-    window.location.href === settings.channelUrl
-  ) {
+  if (settings.isMonitoring) {
     await startMonitoring();
   }
 }
@@ -80,7 +77,7 @@ function stopMonitoring(): void {
   currentObserver = null;
   isProcessing = false;
   appendLog("Monitoring stopped").then(() => {
-    chrome.storage.local.set({ [STORAGE_KEYS.IS_MONITORING]: false });
+    chrome.storage.local.set({ [channelKey(STORAGE_KEYS.IS_MONITORING)]: false });
     window.location.reload();
   });
 }
@@ -135,7 +132,7 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
             chrome.runtime.sendMessage({ type: "speak", message: "Opening link..." });
             window.open(links[0], "_blank");
             chrome.storage.local.set({
-              [STORAGE_KEYS.IS_MONITORING]: false,
+              [channelKey(STORAGE_KEYS.IS_MONITORING)]: false,
             });
             return;
           } else {
@@ -183,14 +180,29 @@ async function waitForElement(selector: string): Promise<Element | null> {
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Reads all STORAGE_KEYS from chrome.storage.local.
+ * Reads settings from chrome.storage.local. All task settings are stored per-channel
+ * with a `channel:${url}:` prefix. Only webhookUrl is global.
  *
  * @returns The current extension settings as a typed Settings object
  */
 async function getSettings(): Promise<Settings> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(Object.values(STORAGE_KEYS), (result) =>
-      resolve(result as unknown as Settings)
-    );
-  });
+  const keys = [
+    channelKey(STORAGE_KEYS.REGEX_FILTER),
+    channelKey(STORAGE_KEYS.DELAY),
+    channelKey(STORAGE_KEYS.OPEN_ENABLED),
+    channelKey(STORAGE_KEYS.NOTIFY_ENABLED),
+    channelKey(STORAGE_KEYS.IS_MONITORING),
+    STORAGE_KEYS.WEBHOOK_URL,
+  ];
+
+  const result = await chrome.storage.local.get(keys);
+
+  return {
+    regexFilter: (result[channelKey(STORAGE_KEYS.REGEX_FILTER)] as string) ?? "",
+    delay: (result[channelKey(STORAGE_KEYS.DELAY)] as number) ?? 0,
+    openEnabled: (result[channelKey(STORAGE_KEYS.OPEN_ENABLED)] as boolean) ?? true,
+    notifyEnabled: (result[channelKey(STORAGE_KEYS.NOTIFY_ENABLED)] as boolean) ?? true,
+    isMonitoring: (result[channelKey(STORAGE_KEYS.IS_MONITORING)] as boolean) ?? false,
+    webhookUrl: (result[STORAGE_KEYS.WEBHOOK_URL] as string) ?? "",
+  };
 }
