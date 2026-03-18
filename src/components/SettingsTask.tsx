@@ -4,26 +4,50 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { STORAGE_KEYS } from "@/config/constants";
 import useSetting from "@/hooks/useSetting";
 
 export default function SettingsTask() {
-  const [regex, setRegex] = useSetting<string>("regexFilter", "");
-  const [delay, setDelay] = useSetting<number>("openDelay", 1000);
+  const [regex, setRegex] = useSetting<string>(STORAGE_KEYS.REGEX_FILTER, "");
+  const [delay, setDelay] = useSetting<number>(STORAGE_KEYS.DELAY, 0);
+  const [openEnabled, setOpenEnabled] = useSetting<boolean>(STORAGE_KEYS.OPEN_ENABLED, true);
+  const [notifyEnabled, setNotifyEnabled] = useSetting<boolean>(STORAGE_KEYS.NOTIFY_ENABLED, true);
+
+  const canMonitor = openEnabled || notifyEnabled;
+
+  const handleMonitor = async () => {
+    if (!canMonitor) return;
+
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id || !tab.url?.startsWith("https://discord.com/")) return;
+
+    chrome.tabs.sendMessage(tab.id, { type: "startMonitoring" });
+  };
+
+  const handleStop = async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) return;
+
+    chrome.tabs.sendMessage(tab.id, { type: "stopMonitoring" });
+  };
 
   return (
-    <div className="overflow-hidden rounded-[0.5rem] border shadow-md">
+    <div className="overflow-hidden rounded-xl border shadow-md">
       <div className="h-full">
         <div className="container flex items-center justify-between py-2">
           <h2 className="text-lg font-semibold">Task settings</h2>
           <div className="flex space-x-2">
             <Button
               className="bg-green-500/20 text-green-500 hover:bg-green-500/40 hover:text-green-600"
+              disabled={!canMonitor}
+              onClick={handleMonitor}
               size="icon"
             >
               <PlayIcon />
             </Button>
             <Button
               className="bg-red-500/20 text-red-500 hover:bg-red-500/40 hover:text-red-600"
+              onClick={handleStop}
               size="icon"
             >
               <Square />
@@ -40,14 +64,38 @@ export default function SettingsTask() {
             type="text"
             value={regex}
           />
-          <Label htmlFor="delay">Open delay (ms)</Label>
+          <Label htmlFor="delay">Delay (ms)</Label>
           <Input
             id="delay"
             onChange={(e) => setDelay(Number(e.target.value))}
-            placeholder="1000"
+            placeholder="0"
             type="number"
             value={delay}
           />
+          <div className="flex gap-2 pt-1">
+            <Button
+              className={
+                openEnabled
+                  ? "flex-1 bg-green-600 text-white hover:bg-green-700"
+                  : "bg-muted text-muted-foreground flex-1 hover:bg-green-600 hover:text-white"
+              }
+              onClick={() => setOpenEnabled(!openEnabled)}
+              variant="secondary"
+            >
+              Open
+            </Button>
+            <Button
+              className={
+                notifyEnabled
+                  ? "flex-1 bg-green-600 text-white hover:bg-green-700"
+                  : "bg-muted text-muted-foreground flex-1 hover:bg-green-600 hover:text-white"
+              }
+              onClick={() => setNotifyEnabled(!notifyEnabled)}
+              variant="secondary"
+            >
+              Notify
+            </Button>
+          </div>
         </div>
       </div>
     </div>
