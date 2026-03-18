@@ -26,6 +26,7 @@ export default {
     zip({ outDir: RELEASE_DIR, outFileName: ZIP_FILENAME }),
   ],
   server: {
+    host: "0.0.0.0",
     cors: {
       origin: [/chrome-extension:\/\//],
     },

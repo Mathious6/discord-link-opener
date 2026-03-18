@@ -3,6 +3,9 @@
   "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
   "remoteUser": "vscode",
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "forwardPorts": [
+    5173
+  ],
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "22"
