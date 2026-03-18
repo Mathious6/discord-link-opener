@@ -13,6 +13,7 @@ export default function useSetting<T>(key: string, defaultValue: T): SettingRetu
   const [value, setValue] = useState<T>(defaultValue);
   const [error, setError] = useState<string | null>(null);
   const isInitialLoad = useRef(true);
+  const isExternalUpdate = useRef(false);
 
   useEffect(() => {
     const loadFromStorage = async () => {
@@ -33,6 +34,7 @@ export default function useSetting<T>(key: string, defaultValue: T): SettingRetu
 
     const onStorageChanged = (changes: { [key: string]: chrome.storage.StorageChange }) => {
       if (changes[key]?.newValue !== undefined) {
+        isExternalUpdate.current = true;
         setValue(changes[key].newValue as T);
       }
     };
@@ -42,7 +44,10 @@ export default function useSetting<T>(key: string, defaultValue: T): SettingRetu
   }, [key]);
 
   useEffect(() => {
-    if (isInitialLoad.current) return;
+    if (isInitialLoad.current || isExternalUpdate.current) {
+      isExternalUpdate.current = false;
+      return;
+    }
 
     const saveToStorage = async () => {
       try {

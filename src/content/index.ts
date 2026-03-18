@@ -20,6 +20,7 @@ interface Settings {
 }
 
 let currentObserver: MutationObserver | null = null;
+let isProcessing = false;
 
 function setStatus(message: string): void {
   chrome.storage.local.set({ [STORAGE_KEYS.MONITORING_STATUS]: message });
@@ -65,7 +66,11 @@ async function startMonitoring(): Promise<void> {
 function stopMonitoring(): void {
   currentObserver?.disconnect();
   currentObserver = null;
-  setStatus("");
+  isProcessing = false;
+  chrome.storage.local.set({
+    [STORAGE_KEYS.IS_MONITORING]: false,
+    [STORAGE_KEYS.MONITORING_STATUS]: "",
+  });
   window.location.reload();
 }
 
@@ -73,7 +78,11 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
   const { regexFilter, delay = 0, notifyEnabled, openEnabled, webhookUrl } = settings;
   const regex = new RegExp(regexFilter || ".*", "i");
 
+  isProcessing = false;
+
   currentObserver = new MutationObserver(async (mutations) => {
+    if (isProcessing) return;
+
     for (const mutation of mutations) {
       const addedNodes = Array.from(mutation.addedNodes).filter(
         (node): node is HTMLElement =>
@@ -86,6 +95,9 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
           .filter((url) => regex.test(url));
 
         if (links.length > 0) {
+          isProcessing = true;
+          currentObserver?.disconnect();
+
           if (notifyEnabled) {
             setStatus("Sending webhook");
             chrome.runtime.sendMessage({
@@ -99,15 +111,16 @@ async function monitor(settings: Settings, serverName: string): Promise<void> {
           }
 
           if (openEnabled) {
-            currentObserver?.disconnect();
             await sleep(delay);
             setStatus("Opening link");
             chrome.runtime.sendMessage({ type: "speak", message: "Opening link..." });
             window.open(links[0], "_blank");
-            chrome.storage.local.set({ [STORAGE_KEYS.IS_MONITORING]: false });
+            chrome.storage.local.set({
+              [STORAGE_KEYS.IS_MONITORING]: false,
+              [STORAGE_KEYS.MONITORING_STATUS]: "",
+            });
             return;
           } else {
-            currentObserver?.disconnect();
             await sleep(delay);
             monitor(settings, serverName);
             return;
