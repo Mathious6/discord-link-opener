@@ -1,17 +1,13 @@
 import { channelKey, STORAGE_KEYS } from "@/config/constants";
-import { appendLog as appendLogToStorage } from "@/lib/storage";
-
-interface Settings {
-  regexFilter: string;
-  delay: number;
-  isMonitoring: boolean;
-  openEnabled: boolean;
-  notifyEnabled: boolean;
-  webhookUrl: string;
-}
+import {
+  appendLog as appendLogToStorage,
+  getSettings as getSettingsFromStorage,
+  type Settings,
+} from "@/lib/storage";
 
 const ck = (key: string) => channelKey(window.location.href, key);
 const appendLog = (message: string) => appendLogToStorage(window.location.href, message);
+const getSettings = () => getSettingsFromStorage(window.location.href);
 
 let currentObserver: MutationObserver | null = null;
 let isProcessing = false;
@@ -159,31 +155,3 @@ async function waitForElement(selector: string): Promise<Element | null> {
 }
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
-
-/**
- * Reads settings from chrome.storage.local. All task settings are stored per-channel
- * with a `channel:${url}:` prefix. Only webhookUrl is global.
- *
- * @returns The current extension settings as a typed Settings object
- */
-async function getSettings(): Promise<Settings> {
-  const channelKeys = [
-    STORAGE_KEYS.REGEX_FILTER,
-    STORAGE_KEYS.DELAY,
-    STORAGE_KEYS.OPEN_ENABLED,
-    STORAGE_KEYS.NOTIFY_ENABLED,
-    STORAGE_KEYS.IS_MONITORING,
-  ] as const;
-
-  const keys = [...channelKeys.map(ck), STORAGE_KEYS.WEBHOOK_URL];
-  const result = await chrome.storage.local.get(keys);
-
-  return {
-    regexFilter: (result[ck(STORAGE_KEYS.REGEX_FILTER)] as string) ?? "",
-    delay: (result[ck(STORAGE_KEYS.DELAY)] as number) ?? 0,
-    openEnabled: (result[ck(STORAGE_KEYS.OPEN_ENABLED)] as boolean) ?? true,
-    notifyEnabled: (result[ck(STORAGE_KEYS.NOTIFY_ENABLED)] as boolean) ?? true,
-    isMonitoring: (result[ck(STORAGE_KEYS.IS_MONITORING)] as boolean) ?? false,
-    webhookUrl: (result[STORAGE_KEYS.WEBHOOK_URL] as string) ?? "",
-  };
-}
