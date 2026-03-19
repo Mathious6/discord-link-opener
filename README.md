@@ -32,11 +32,11 @@ A **Chrome extension** that automatically monitors Discord channels for links ma
    - **Webhook URL**: a [Discord webhook URL](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) for notifications
 5. **Click the play button** to start monitoring
 
-| Open | Notify | Opens link | Webhook sent | Observes again | Delay applies to                                |
-| :--: | :----: | :--------: | :----------: | :------------: | ----------------------------------------------- |
-|  ON  |   ON   |    Yes     |     Yes      |       No       | Link opened after delay, webhook sent instantly |
-|  ON  |  OFF   |    Yes     |      No      |       No       | Link opened after delay                         |
-| OFF  |   ON   |     No     |     Yes      |      Yes       | Re-observe after delay, webhook sent instantly  |
+| Open  | Notify | Opens link | Webhook sent | Observes again | Delay applies to                                |
+| :---: | :----: | :--------: | :----------: | :------------: | ----------------------------------------------- |
+|  ON   |   ON   |    Yes     |     Yes      |       No       | Link opened after delay, webhook sent instantly |
+|  ON   |  OFF   |    Yes     |      No      |       No       | Link opened after delay                         |
+|  OFF  |   ON   |     No     |     Yes      |      Yes       | Re-observe after delay, webhook sent instantly  |
 
 ## Installation
 
