@@ -1,4 +1,5 @@
 import { channelKey, STORAGE_KEYS } from "@/config/constants";
+import { appendLog as appendLogToStorage } from "@/lib/storage";
 
 interface Settings {
   regexFilter: string;
@@ -10,23 +11,10 @@ interface Settings {
 }
 
 const ck = (key: string) => channelKey(window.location.href, key);
+const appendLog = (message: string) => appendLogToStorage(window.location.href, message);
 
 let currentObserver: MutationObserver | null = null;
 let isProcessing = false;
-
-/**
- * Appends a timestamped log entry to the monitoring logs array in chrome.storage.
- *
- * @param message - Log message to append (e.g. "Monitoring Discord")
- */
-async function appendLog(message: string): Promise<void> {
-  const ts = new Date().toLocaleTimeString("en-US", { hour12: false });
-  const key = ck(STORAGE_KEYS.MONITORING_LOGS);
-  const result = await chrome.storage.local.get([key]);
-  const logs = (result[key] as string[]) ?? [];
-  logs.push(`[${ts}] ${message}`);
-  await chrome.storage.local.set({ [key]: logs });
-}
 
 chrome.runtime.onMessage.addListener((request: { type: string }) => {
   if (request.type === "startMonitoring") {
