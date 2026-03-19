@@ -1,5 +1,7 @@
 # Discord link-opener
 
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Mathious6/discord-link-opener/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Mathious6/discord-link-opener)
+
 A **Chrome extension** that automatically monitors Discord channels for links matching a regular expression, opens them in your browser, and optionally sends webhook notifications.
 
 ![demo_gif](./docs/demo.gif)
