@@ -1,27 +1,29 @@
 # Agent Instructions
 
-## Dev Container (MANDATORY)
+## Local Development
 
-All shell commands MUST run inside the dev container. NEVER run `npm`, `node`, `npx`, `tsc`, or any build/lint/test commands directly on the host machine.
+All commands run directly on the host machine. Node.js 22+ is required.
 
-### Container access
-
-```bash
-docker exec discord-link-opener <command>
-```
-
-Or with the workspace directory:
+### Setup
 
 ```bash
-docker exec -w /workspaces/discord-link-opener discord-link-opener <command>
+npm ci
 ```
 
-### Why
+### Development
 
-- `node_modules` contains platform-specific native bindings (linux-x64 in container vs darwin-arm64 on host)
-- Running `npm install` on the host corrupts bindings for the container and vice versa
-- The dev container has the correct Node version and tooling configured
+```bash
+npm run dev
+```
+
+Load the extension from the `dist/` directory in `chrome://extensions/` (Developer mode enabled).
+
+### Build
+
+```bash
+npm run build
+```
 
 ### File editing
 
-Reading and writing source files can be done on the host (the workspace is mounted). Only shell commands must go through the container.
+Source files are in `src/`. The project uses Prettier for formatting and ESLint for linting — both run automatically on save via VS Code settings.
