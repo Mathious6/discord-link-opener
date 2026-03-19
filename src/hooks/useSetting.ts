@@ -1,75 +1,51 @@
-import React, { useState, useEffect, useRef } from "react";
-
-type SettingReturn<T> = [T, React.Dispatch<React.SetStateAction<T>>, string | null];
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * Syncs a React state value with chrome.storage.local, bidirectionally.
- * Listens for external storage changes (e.g. from content script) via onChanged.
- * Uses `isExternalUpdate` ref to prevent bounce-back writes when the change originated externally.
+ *
+ * Flow: setValue() writes to chrome.storage → onChanged updates React state.
+ * External writes (e.g. from content script) follow the same onChanged path.
+ * No bounce-back possible because React state is never the source of writes.
  *
  * @param key - The storage key name (from STORAGE_KEYS)
  * @param defaultValue - Fallback value used until the stored value is loaded
  * @param prefix - Optional prefix for per-channel storage (e.g. `channel:${url}`)
- * @returns Tuple of [value, setValue, error]
+ * @returns Tuple of [value, setValue]
  */
 export default function useSetting<T>(
   key: string,
   defaultValue: T,
   prefix?: string
-): SettingReturn<T> {
+): [T, (value: T) => void] {
   const storageKey = prefix ? `${prefix}:${key}` : key;
-  const [value, setValue] = useState<T>(defaultValue);
-  const [error, setError] = useState<string | null>(null);
-  const isInitialLoad = useRef(true);
-  const isExternalUpdate = useRef(false);
+  const [value, setLocal] = useState<T>(defaultValue);
 
   useEffect(() => {
-    isInitialLoad.current = true;
+    chrome.storage.local
+      .get([storageKey])
+      .then((result) => {
+        if (result[storageKey] !== undefined) setLocal(result[storageKey] as T);
+      })
+      .catch((err) => console.error(`Failed to load ${storageKey}:`, err));
 
-    const loadFromStorage = async () => {
-      try {
-        setError(null);
-        const result = await chrome.storage.local.get([storageKey]);
-        setValue(result[storageKey] !== undefined ? (result[storageKey] as T) : defaultValue);
-        isInitialLoad.current = false;
-      } catch (err) {
-        console.error(`Failed to load ${storageKey} from storage:`, err);
-        setError(`Failed to load settings`);
-        isInitialLoad.current = false;
-      }
-    };
-
-    loadFromStorage();
-
-    const onStorageChanged = (changes: { [k: string]: chrome.storage.StorageChange }) => {
+    const onChanged = (changes: { [k: string]: chrome.storage.StorageChange }) => {
       if (changes[storageKey]?.newValue !== undefined) {
-        isExternalUpdate.current = true;
-        setValue(changes[storageKey].newValue as T);
+        setLocal(changes[storageKey].newValue as T);
       }
     };
-    chrome.storage.onChanged.addListener(onStorageChanged);
-
-    return () => chrome.storage.onChanged.removeListener(onStorageChanged);
+    chrome.storage.onChanged.addListener(onChanged);
+    return () => chrome.storage.onChanged.removeListener(onChanged);
   }, [storageKey]);
 
-  useEffect(() => {
-    if (isInitialLoad.current || isExternalUpdate.current) {
-      isExternalUpdate.current = false;
-      return;
-    }
+  const setValue = useCallback(
+    (newValue: T) => {
+      setLocal(newValue);
+      chrome.storage.local
+        .set({ [storageKey]: newValue })
+        .catch((err) => console.error(`Failed to save ${storageKey}:`, err));
+    },
+    [storageKey]
+  );
 
-    const saveToStorage = async () => {
-      try {
-        await chrome.storage.local.set({ [storageKey]: value });
-        setError(null);
-      } catch (err) {
-        console.error(`Failed to save ${storageKey} to storage:`, err);
-        setError(`Failed to save settings`);
-      }
-    };
-
-    saveToStorage();
-  }, [value, storageKey]);
-
-  return [value, setValue, error];
+  return [value, setValue];
 }
