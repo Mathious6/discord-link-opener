@@ -1,14 +1,16 @@
 {
   "name": "discord-link-opener",
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx,css,md,json}\"",
-    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" --fix"
+    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\""
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",

@@ -1,6 +1,34 @@
+import { appendLog } from "@/lib/storage";
+
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error: unknown) => console.error(error));
+
+/**
+ * Clears `isMonitoring` for any channel whose URL is no longer open in a tab.
+ * Called when a tab is closed or navigates to a different URL so that
+ * returning to the channel later does not auto-resume monitoring.
+ */
+async function clearOrphanedMonitoring(): Promise<void> {
+  const storage = await chrome.storage.local.get(null);
+  const discordTabs = await chrome.tabs.query({ url: "https://discord.com/*" });
+  const openUrls = new Set(discordTabs.map((t) => t.url).filter(Boolean));
+
+  for (const [key, value] of Object.entries(storage)) {
+    if (!key.endsWith(":isMonitoring") || value !== true) continue;
+
+    const channelUrl = key.slice("channel:".length, -":isMonitoring".length);
+    if (!openUrls.has(channelUrl)) {
+      await appendLog(channelUrl, "Monitoring stopped (tab closed)");
+      await chrome.storage.local.set({ [key]: false });
+    }
+  }
+}
+
+chrome.tabs.onRemoved.addListener(() => clearOrphanedMonitoring());
+chrome.tabs.onUpdated.addListener((_tabId, changeInfo) => {
+  if (changeInfo.url) clearOrphanedMonitoring();
+});
 
 interface ExtensionMessage {
   type: "speak" | "sendWebhook";
