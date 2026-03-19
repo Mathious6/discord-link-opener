@@ -3,5 +3,5 @@
 set -euo pipefail # Exit on error // undefined variable // pipe error
 
 if [ -f package.json ]; then
-    npm install
+    npm ci
 fi
