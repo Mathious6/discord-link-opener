@@ -43,11 +43,14 @@ npm run build
 3. Open the browser console (`Cmd + Option + J`) and paste:
 
    ```js
+   // Remove the DM sidebar (left panel) — hides direct messages list
+   document.querySelector('nav[aria-label="Direct Messages"]')?.remove();
+
    // Remove the servers sidebar (left icon column) — hides server list
-   document.querySelector('nav[aria-label="Servers sidebar"]').remove();
+   document.querySelector('nav[aria-label="Servers sidebar"]')?.remove();
 
    // Remove the user panel (bottom-left) — hides username and avatar
-   document.querySelector('section[aria-label="User status and settings"]').remove();
+   document.querySelector('section[aria-label="User status and settings"]')?.remove();
    ```
 
 ## Step 3 — Configure the extension
