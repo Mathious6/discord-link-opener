@@ -4,6 +4,13 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      # TODO: remove on eslint-plugin-react@7.37.5 support for ESLint 10
+      - dependency-name: "@eslint/js"
+        versions: [">=10"]
+      # TODO: remove on eslint-plugin-react@7.37.5 support for ESLint 10
+      - dependency-name: "@eslint/json"
+        versions: [">=1.2"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
