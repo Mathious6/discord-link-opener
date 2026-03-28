@@ -12,6 +12,9 @@ updates:
       # TODO: remove on eslint-plugin-react@7.37.5 support for ESLint 10
       - dependency-name: "@eslint/json"
         versions: [">=1.2"]
+      # TODO: remove once typescript-eslint supports TypeScript 6
+      - dependency-name: "typescript"
+        versions: [">=6"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
