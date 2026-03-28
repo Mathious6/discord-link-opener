@@ -3,7 +3,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "cron"
+      cronjob: "0 6 * * 1"
     ignore:
       # TODO: remove on eslint-plugin-react@7.37.5 support for ESLint 10
       - dependency-name: "@eslint/js"
