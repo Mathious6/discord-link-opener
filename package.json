@@ -33,7 +33,7 @@
     "@eslint/markdown": "^8.0.0",
     "@types/chrome": "^0.1.38",
     "@types/eslint-plugin-tailwindcss": "^3.17.0",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.5.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
