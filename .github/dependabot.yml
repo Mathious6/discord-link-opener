@@ -6,13 +6,14 @@ updates:
       interval: "cron"
       cronjob: "0 6 * * 1"
     ignore:
-      # TODO: remove on eslint-plugin-react@7.37.5 support for ESLint 10
+      # Remove once eslint-plugin-react supports ESLint 10
+      - dependency-name: "eslint"
+        versions: [">=10"]
       - dependency-name: "@eslint/js"
         versions: [">=10"]
-      # TODO: remove on eslint-plugin-react@7.37.5 support for ESLint 10
       - dependency-name: "@eslint/json"
         versions: [">=1.2"]
-      # TODO: remove once typescript-eslint supports TypeScript 6
+      # Remove once typescript-eslint supports TypeScript 6
       - dependency-name: "typescript"
         versions: [">=6"]
   - package-ecosystem: "github-actions"
